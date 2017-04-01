@@ -20,6 +20,7 @@ test('.get() - limit', t => {
 	lru.set('1', 1);
 	lru.set('2', 2);
 	t.is(lru.get('1'), 1);
+	t.is(lru.get('3'), undefined);
 	lru.set('3', 3);
 	lru.get('1');
 	lru.set('4', 4);
@@ -64,6 +65,7 @@ test('.peek()', t => {
 	t.is(lru.peek('1'), 1);
 	lru.set('2', 2);
 	t.is(lru.peek('1'), 1);
+	t.is(lru.peek('3'), undefined);
 	lru.set('3', 3);
 	lru.set('4', 4);
 	t.false(lru.has('1'));
