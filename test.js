@@ -1,6 +1,15 @@
 import test from 'ava';
 import M from '.';
 
+const lruWithDupes = () => {
+	const lru = new M({maxSize: 2});
+	lru.set('key', 'value');
+	lru.set('keyDupe', 1);
+	lru.set('keyDupe', 2);
+
+	return lru;
+};
+
 test('main', t => {
 	t.throws(() => {
 		new M(); // eslint-disable-line no-new
@@ -110,12 +119,22 @@ test('.keys()', t => {
 	t.deepEqual([...lru.keys()].sort(), ['1', '2', '3']);
 });
 
+test('.keys() - accounts for dupes', t => {
+	const lru = lruWithDupes();
+	t.deepEqual([...lru.keys()].sort(), ['key', 'keyDupe']);
+});
+
 test('.values()', t => {
 	const lru = new M({maxSize: 2});
 	lru.set('1', 1);
 	lru.set('2', 2);
 	lru.set('3', 3);
 	t.deepEqual([...lru.values()].sort(), [1, 2, 3]);
+});
+
+test('.values() - accounts for dupes', t => {
+	const lru = lruWithDupes();
+	t.deepEqual([...lru.values()].sort(), [2, 'value']);
 });
 
 test('.[Symbol.iterator]()', t => {
@@ -126,6 +145,11 @@ test('.[Symbol.iterator]()', t => {
 	t.deepEqual([...lru].sort(), [['1', 1], ['2', 2], ['3', 3]]);
 });
 
+test('.[Symbol.iterator]() - accounts for dupes', t => {
+	const lru = lruWithDupes();
+	t.deepEqual([...lru].sort(), [['key', 'value'], ['keyDupe', 2]]);
+});
+
 test('.size', t => {
 	const lru = new M({maxSize: 100});
 	lru.set('1', 1);
@@ -134,5 +158,10 @@ test('.size', t => {
 	lru.delete('1');
 	t.is(lru.size, 1);
 	lru.set('3', 3);
+	t.is(lru.size, 2);
+});
+
+test('.size - accounts for dupes', t => {
+	const lru = lruWithDupes();
 	t.is(lru.size, 2);
 });
