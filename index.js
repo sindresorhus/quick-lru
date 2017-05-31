@@ -86,7 +86,9 @@ class QuickLRU {
 		}
 
 		for (const el of this.oldCache) {
-			yield el;
+			if (!this.cache.has(el[0])) {
+				yield el;
+			}
 		}
 	}
 
