@@ -86,12 +86,19 @@ class QuickLRU {
 		}
 
 		for (const el of this.oldCache) {
-			yield el;
+			if (!this.cache.has(el[0])) {
+				yield el;
+			}
 		}
 	}
 
 	get size() {
-		return this.cache.size + this.oldCache.size;
+		let size = 0;
+		for (const el of this) { // eslint-disable-line no-unused-vars
+			size++;
+		}
+
+		return size;
 	}
 }
 
