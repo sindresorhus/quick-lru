@@ -11,12 +11,15 @@ class QuickLRU {
 		this.maxSize = opts.maxSize;
 		this.cache = new Map();
 		this.oldCache = new Map();
+		this._size = 0;
 	}
 
 	_set(key, value) {
 		this.cache.set(key, value);
+		this._size++;
 
-		if (this.cache.size >= this.maxSize) {
+		if (this._size >= this.maxSize) {
+			this._size = 0;
 			this.oldCache = this.cache;
 			this.cache = new Map();
 		}
@@ -59,13 +62,17 @@ class QuickLRU {
 	}
 
 	delete(key) {
-		this.cache.delete(key);
+		if (this.cache.delete(key)) {
+			this._size--;
+		}
+
 		this.oldCache.delete(key);
 	}
 
 	clear() {
 		this.cache.clear();
 		this.oldCache.clear();
+		this._size = 0;
 	}
 
 	* keys() {
@@ -93,12 +100,14 @@ class QuickLRU {
 	}
 
 	get size() {
-		let size = 0;
-		for (const _ of this) { // eslint-disable-line no-unused-vars
-			size++;
+		let oldCacheSize = 0;
+		for (const el of this.oldCache) {
+			if (!this.cache.has(el[0])) {
+				oldCacheSize++;
+			}
 		}
 
-		return size;
+		return this._size + oldCacheSize;
 	}
 }
 
