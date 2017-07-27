@@ -10,7 +10,7 @@ Inspired by the [`haslru` algorithm](https://github.com/dominictarr/hashlru#algo
 ## Install
 
 ```
-$ npm install --save quick-lru
+$ npm install quick-lru
 ```
 
 
