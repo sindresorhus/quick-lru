@@ -11,12 +11,15 @@ class QuickLRU {
 		this.maxSize = opts.maxSize;
 		this.cache = new Map();
 		this.oldCache = new Map();
+		this._size = 0;
 	}
 
 	_set(key, value) {
 		this.cache.set(key, value);
+		this._size++;
 
-		if (this.cache.size >= this.maxSize) {
+		if (this._size >= this.maxSize) {
+			this._size = 0;
 			this.oldCache = this.cache;
 			this.cache = new Map();
 		}
