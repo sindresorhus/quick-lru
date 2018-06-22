@@ -44,7 +44,7 @@ Type: `Object`
 #### maxSize
 
 *Required*<br>
-Type: `Object`
+Type: `number`
 
 Maximum number of items before evicting the least recently used items.
 
