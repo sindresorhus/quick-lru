@@ -1,8 +1,8 @@
 import test from 'ava';
-import M from '.';
+import QuickLRU from '.';
 
 const lruWithDupes = () => {
-	const lru = new M({maxSize: 2});
+	const lru = new QuickLRU({maxSize: 2});
 	lru.set('key', 'value');
 	lru.set('keyDupe', 1);
 	lru.set('keyDupe', 2);
@@ -12,12 +12,12 @@ const lruWithDupes = () => {
 
 test('main', t => {
 	t.throws(() => {
-		new M(); // eslint-disable-line no-new
+		new QuickLRU(); // eslint-disable-line no-new
 	}, /maxSize/);
 });
 
 test('.get() / .set()', t => {
-	const lru = new M({maxSize: 100});
+	const lru = new QuickLRU({maxSize: 100});
 	lru.set('foo', 1);
 	lru.set('bar', 2);
 	t.is(lru.get('foo'), 1);
@@ -25,7 +25,7 @@ test('.get() / .set()', t => {
 });
 
 test('.get() - limit', t => {
-	const lru = new M({maxSize: 2});
+	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
 	lru.set('2', 2);
 	t.is(lru.get('1'), 1);
@@ -39,7 +39,7 @@ test('.get() - limit', t => {
 });
 
 test('.set() - limit', t => {
-	const lru = new M({maxSize: 2});
+	const lru = new QuickLRU({maxSize: 2});
 	lru.set('foo', 1);
 	lru.set('bar', 2);
 	t.is(lru.get('foo'), 1);
@@ -54,7 +54,7 @@ test('.set() - limit', t => {
 });
 
 test('.set() - update item', t => {
-	const lru = new M({maxSize: 100});
+	const lru = new QuickLRU({maxSize: 100});
 	lru.set('foo', 1);
 	t.is(lru.get('foo'), 1);
 	lru.set('foo', 2);
@@ -63,13 +63,13 @@ test('.set() - update item', t => {
 });
 
 test('.has()', t => {
-	const lru = new M({maxSize: 100});
+	const lru = new QuickLRU({maxSize: 100});
 	lru.set('foo', 1);
 	t.true(lru.has('foo'));
 });
 
 test('.peek()', t => {
-	const lru = new M({maxSize: 2});
+	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
 	t.is(lru.peek('1'), 1);
 	lru.set('2', 2);
@@ -81,7 +81,7 @@ test('.peek()', t => {
 });
 
 test('.delete()', t => {
-	const lru = new M({maxSize: 100});
+	const lru = new QuickLRU({maxSize: 100});
 	lru.set('foo', 1);
 	lru.set('bar', 2);
 	lru.delete('foo');
@@ -91,7 +91,7 @@ test('.delete()', t => {
 });
 
 test('.delete() - limit', t => {
-	const lru = new M({maxSize: 2});
+	const lru = new QuickLRU({maxSize: 2});
 	lru.set('foo', 1);
 	lru.set('bar', 2);
 	t.is(lru.size, 2);
@@ -103,7 +103,7 @@ test('.delete() - limit', t => {
 });
 
 test('.clear()', t => {
-	const lru = new M({maxSize: 2});
+	const lru = new QuickLRU({maxSize: 2});
 	lru.set('foo', 1);
 	lru.set('bar', 2);
 	lru.set('baz', 3);
@@ -112,7 +112,7 @@ test('.clear()', t => {
 });
 
 test('.keys()', t => {
-	const lru = new M({maxSize: 2});
+	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
 	lru.set('2', 2);
 	lru.set('3', 3);
@@ -125,7 +125,7 @@ test('.keys() - accounts for dupes', t => {
 });
 
 test('.values()', t => {
-	const lru = new M({maxSize: 2});
+	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
 	lru.set('2', 2);
 	lru.set('3', 3);
@@ -138,7 +138,7 @@ test('.values() - accounts for dupes', t => {
 });
 
 test('.[Symbol.iterator]()', t => {
-	const lru = new M({maxSize: 2});
+	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
 	lru.set('2', 2);
 	lru.set('3', 3);
@@ -151,7 +151,7 @@ test('.[Symbol.iterator]() - accounts for dupes', t => {
 });
 
 test('.size', t => {
-	const lru = new M({maxSize: 100});
+	const lru = new QuickLRU({maxSize: 100});
 	lru.set('1', 1);
 	lru.set('2', 2);
 	t.is(lru.size, 2);

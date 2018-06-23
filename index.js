@@ -1,14 +1,12 @@
 'use strict';
 
 class QuickLRU {
-	constructor(opts) {
-		opts = Object.assign({}, opts);
-
-		if (!(opts.maxSize && opts.maxSize > 0)) {
+	constructor(options = {}) {
+		if (!(options.maxSize && options.maxSize > 0)) {
 			throw new TypeError('`maxSize` must be a number greater than 0');
 		}
 
-		this.maxSize = opts.maxSize;
+		this.maxSize = options.maxSize;
 		this.cache = new Map();
 		this.oldCache = new Map();
 		this._size = 0;
@@ -76,33 +74,34 @@ class QuickLRU {
 	}
 
 	* keys() {
-		for (const el of this) {
-			yield el[0];
+		for (const [key] of this) {
+			yield key;
 		}
 	}
 
 	* values() {
-		for (const el of this) {
-			yield el[1];
+		for (const [, value] of this) {
+			yield value;
 		}
 	}
 
 	* [Symbol.iterator]() {
-		for (const el of this.cache) {
-			yield el;
+		for (const item of this.cache) {
+			yield item;
 		}
 
-		for (const el of this.oldCache) {
-			if (!this.cache.has(el[0])) {
-				yield el;
+		for (const item of this.oldCache) {
+			const [key] = item;
+			if (!this.cache.has(key)) {
+				yield item;
 			}
 		}
 	}
 
 	get size() {
 		let oldCacheSize = 0;
-		for (const el of this.oldCache) {
-			if (!this.cache.has(el[0])) {
+		for (const key of this.oldCache.keys()) {
+			if (!this.cache.has(key)) {
 				oldCacheSize++;
 			}
 		}
