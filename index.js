@@ -85,6 +85,12 @@ class QuickLRU {
 		}
 	}
 
+	* entries() {
+		for (const [key, value] of this) {
+			yield [key, value];
+		}
+	}
+
 	* [Symbol.iterator]() {
 		for (const item of this.cache) {
 			yield item;
