@@ -60,11 +60,12 @@ class QuickLRU {
 	}
 
 	delete(key) {
-		if (this.cache.delete(key)) {
+		const deleted = this.cache.delete(key);
+		if (deleted) {
 			this._size--;
 		}
 
-		this.oldCache.delete(key);
+		return this.oldCache.delete(key) || deleted;
 	}
 
 	clear() {
