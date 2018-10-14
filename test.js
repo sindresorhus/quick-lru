@@ -87,6 +87,7 @@ test('.delete()', t => {
 	t.true(lru.delete('foo'));
 	t.false(lru.has('foo'));
 	t.true(lru.has('bar'));
+	t.false(lru.delete('foo'));
 	t.is(lru.size, 1);
 });
 
