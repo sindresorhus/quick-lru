@@ -84,9 +84,10 @@ test('.delete()', t => {
 	const lru = new QuickLRU({maxSize: 100});
 	lru.set('foo', 1);
 	lru.set('bar', 2);
-	lru.delete('foo');
+	t.true(lru.delete('foo'));
 	t.false(lru.has('foo'));
 	t.true(lru.has('bar'));
+	t.false(lru.delete('foo'));
 	t.is(lru.size, 1);
 });
 
@@ -95,7 +96,7 @@ test('.delete() - limit', t => {
 	lru.set('foo', 1);
 	lru.set('bar', 2);
 	t.is(lru.size, 2);
-	lru.delete('foo');
+	t.true(lru.delete('foo'));
 	t.false(lru.has('foo'));
 	t.true(lru.has('bar'));
 	lru.delete('bar');

@@ -74,6 +74,8 @@ Get an item without marking it as recently used.
 
 Delete an item.
 
+Returns `true` if the item is removed or `false` if the item doesn't exist.
+
 #### .clear()
 
 Delete all items.
