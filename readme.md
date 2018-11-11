@@ -72,7 +72,9 @@ Get an item without marking it as recently used.
 
 #### .delete(key)
 
-Delete an item. Returns `true` if the item is removed, `false` if the item doesn't exist
+Delete an item.
+
+Returns `true` if the item is removed or `false` if the item doesn't exist.
 
 #### .clear()
 
