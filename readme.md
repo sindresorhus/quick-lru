@@ -46,7 +46,7 @@ Type: `Object`
 *Required*<br>
 Type: `number`
 
-Maximum number of items before evicting the least recently used items.
+The maximum number of items before evicting the least recently used items.
 
 ### Instance
 
