@@ -112,3 +112,4 @@ class QuickLRU {
 }
 
 module.exports = QuickLRU;
+module.exports.default = QuickLRU;
