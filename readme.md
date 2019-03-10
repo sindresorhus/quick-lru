@@ -90,7 +90,7 @@ Iterable for all the values.
 
 #### .size
 
-Get the item count.
+The stored item count.
 
 
 ## License
