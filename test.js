@@ -1,7 +1,7 @@
 import test from 'ava';
 import QuickLRU from '.';
 
-const lruWithDupes = () => {
+const lruWithDuplicates = () => {
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('key', 'value');
 	lru.set('keyDupe', 1);
@@ -121,7 +121,7 @@ test('.keys()', t => {
 });
 
 test('.keys() - accounts for dupes', t => {
-	const lru = lruWithDupes();
+	const lru = lruWithDuplicates();
 	t.deepEqual([...lru.keys()].sort(), ['key', 'keyDupe']);
 });
 
@@ -134,7 +134,7 @@ test('.values()', t => {
 });
 
 test('.values() - accounts for dupes', t => {
-	const lru = lruWithDupes();
+	const lru = lruWithDuplicates();
 	t.deepEqual([...lru.values()].sort(), [2, 'value']);
 });
 
@@ -147,7 +147,7 @@ test('.[Symbol.iterator]()', t => {
 });
 
 test('.[Symbol.iterator]() - accounts for dupes', t => {
-	const lru = lruWithDupes();
+	const lru = lruWithDuplicates();
 	t.deepEqual([...lru].sort(), [['key', 'value'], ['keyDupe', 2]]);
 });
 
@@ -163,6 +163,6 @@ test('.size', t => {
 });
 
 test('.size - accounts for dupes', t => {
-	const lru = lruWithDupes();
+	const lru = lruWithDuplicates();
 	t.is(lru.size, 2);
 });
