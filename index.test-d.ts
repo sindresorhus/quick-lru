@@ -1,5 +1,5 @@
-import {expectType} from 'tsd-check';
-import QuickLRU from '.';
+import {expectType} from 'tsd';
+import QuickLRU = require('.');
 
 const lru = new QuickLRU<string, number>({maxSize: 1000});
 
