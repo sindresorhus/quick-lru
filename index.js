@@ -30,6 +30,7 @@ class QuickLRU {
 
 		if (this.oldCache.has(key)) {
 			const value = this.oldCache.get(key);
+			this.oldCache.delete(key);
 			this._set(key, value);
 			return value;
 		}
