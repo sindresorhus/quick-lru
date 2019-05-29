@@ -33,13 +33,13 @@ lru.get('🦄');
 
 ## API
 
-### new QuickLRU([options])
+### new QuickLRU(options?)
 
 Returns a new instance.
 
 ### options
 
-Type: `Object`
+Type: `object`
 
 #### maxSize
 
@@ -91,8 +91,3 @@ Iterable for all the values.
 #### .size
 
 The stored item count.
-
-
-## License
-
-MIT © [Sindre Sorhus](https://sindresorhus.com)

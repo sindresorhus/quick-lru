@@ -6,7 +6,6 @@ const lruWithDuplicates = () => {
 	lru.set('key', 'value');
 	lru.set('keyDupe', 1);
 	lru.set('keyDupe', 2);
-
 	return lru;
 };
 
@@ -120,7 +119,7 @@ test('.keys()', t => {
 	t.deepEqual([...lru.keys()].sort(), ['1', '2', '3']);
 });
 
-test('.keys() - accounts for dupes', t => {
+test('.keys() - accounts for duplicates', t => {
 	const lru = lruWithDuplicates();
 	t.deepEqual([...lru.keys()].sort(), ['key', 'keyDupe']);
 });
@@ -133,7 +132,7 @@ test('.values()', t => {
 	t.deepEqual([...lru.values()].sort(), [1, 2, 3]);
 });
 
-test('.values() - accounts for dupes', t => {
+test('.values() - accounts for duplicates', t => {
 	const lru = lruWithDuplicates();
 	t.deepEqual([...lru.values()].sort(), [2, 'value']);
 });
@@ -146,7 +145,7 @@ test('.[Symbol.iterator]()', t => {
 	t.deepEqual([...lru].sort(), [['1', 1], ['2', 2], ['3', 3]]);
 });
 
-test('.[Symbol.iterator]() - accounts for dupes', t => {
+test('.[Symbol.iterator]() - accounts for duplicates', t => {
 	const lru = lruWithDuplicates();
 	t.deepEqual([...lru].sort(), [['key', 'value'], ['keyDupe', 2]]);
 });
@@ -162,12 +161,12 @@ test('.size', t => {
 	t.is(lru.size, 2);
 });
 
-test('.size - accounts for dupes', t => {
+test('.size - accounts for duplicates', t => {
 	const lru = lruWithDuplicates();
 	t.is(lru.size, 2);
 });
 
-test('checks total cache size does not exceed maxSize', t => {
+test('checks total cache size does not exceed `maxSize`', t => {
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
 	lru.set('2', 2);
