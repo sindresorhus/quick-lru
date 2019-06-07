@@ -7,7 +7,7 @@ declare namespace QuickLRU {
 	}
 }
 
-declare class QuickLRU<KeyType extends unknown, ValueType extends unknown>
+declare class QuickLRU<KeyType, ValueType>
 	implements Iterable<[KeyType, ValueType]> {
 	/**
 	The stored item count.
