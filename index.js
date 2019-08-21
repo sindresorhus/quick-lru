@@ -108,7 +108,7 @@ class QuickLRU {
 			}
 		}
 
-		return this._size + oldCacheSize;
+		return Math.min(this._size + oldCacheSize, this.maxSize);
 	}
 }
 

@@ -166,6 +166,15 @@ test('.size - accounts for duplicates', t => {
 	t.is(lru.size, 2);
 });
 
+test('max size', t => {
+	const lru = new QuickLRU({maxSize: 3});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	lru.set('3', 3);
+	lru.set('4', 4);
+	t.is(lru.size, 3);
+});
+
 test('checks total cache size does not exceed `maxSize`', t => {
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
@@ -173,3 +182,4 @@ test('checks total cache size does not exceed `maxSize`', t => {
 	lru.get('1');
 	t.is(lru.oldCache.has('1'), false);
 });
+
