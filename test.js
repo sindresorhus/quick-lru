@@ -182,4 +182,3 @@ test('checks total cache size does not exceed `maxSize`', t => {
 	lru.get('1');
 	t.is(lru.oldCache.has('1'), false);
 });
-
