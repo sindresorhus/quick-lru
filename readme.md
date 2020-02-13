@@ -1,18 +1,16 @@
 # quick-lru [![Build Status](https://travis-ci.org/sindresorhus/quick-lru.svg?branch=master)](https://travis-ci.org/sindresorhus/quick-lru) [![Coverage Status](https://coveralls.io/repos/github/sindresorhus/quick-lru/badge.svg?branch=master)](https://coveralls.io/github/sindresorhus/quick-lru?branch=master)
 
-> Simple ["Least Recently Used" (LRU) cache](https://en.m.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29)
+> Simple [“Least Recently Used” (LRU) cache](https://en.m.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29)
 
 Useful when you need to cache something and limit memory usage.
 
 Inspired by the [`hashlru` algorithm](https://github.com/dominictarr/hashlru#algorithm), but instead uses [`Map`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Map) to support keys of any type, not just strings, and values can be `undefined`.
-
 
 ## Install
 
 ```
 $ npm install quick-lru
 ```
-
 
 ## Usage
 
@@ -30,7 +28,6 @@ lru.get('🦄');
 //=> '🌈'
 ```
 
-
 ## API
 
 ### new QuickLRU(options?)
@@ -43,7 +40,7 @@ Type: `object`
 
 #### maxSize
 
-*Required*<br>
+*Required*\
 Type: `number`
 
 The maximum number of items before evicting the least recently used items.
@@ -91,7 +88,6 @@ Iterable for all the values.
 #### .size
 
 The stored item count.
-
 
 ---
 
