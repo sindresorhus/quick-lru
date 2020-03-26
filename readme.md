@@ -45,6 +45,12 @@ Type: `number`
 
 The maximum number of items before evicting the least recently used items.
 
+#### onEviction
+*Optional*\
+Type: `(key, value) => void`
+
+Method to call when an item is about to be evicted from the cache. Useful when a cleanup operation is necessary.
+
 ### Instance
 
 The instance is [`iterable`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Iteration_protocols) so you can use it directly in a [`for…of`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Statements/for...of) loop.

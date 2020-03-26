@@ -4,6 +4,10 @@ declare namespace QuickLRU {
 		The maximum number of items before evicting the least recently used items.
 		*/
 		readonly maxSize: number;
+		/**
+	  Method to call when an item is about to be evicted from the cache. Useful when a cleanup operation is necessary.
+		*/
+		onEviction?: (key: any, value: any) => void;
 	}
 }
 
