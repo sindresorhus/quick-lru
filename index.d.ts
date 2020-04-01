@@ -5,9 +5,10 @@ declare namespace QuickLRU {
 		*/
 		readonly maxSize: number;
 		/**
-	  Method to call when an item is about to be evicted from the cache. Useful when a cleanup operation is necessary.
+		Called when an item will be evicted from the cache. 
+		Useful for side effects or for items like object URLs that need explicit cleanup (revokeObjectURL).
 		*/
-		onEviction?: (key: any, value: any) => void;
+		onEviction?: <KeyType, ValueType> (key: KeyType, value: ValueType) => void;
 	}
 }
 
