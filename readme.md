@@ -49,7 +49,8 @@ The maximum number of items before evicting the least recently used items.
 *Optional*\
 Type: `(key, value) => void`
 
-Method to call when an item is about to be evicted from the cache. Useful when a cleanup operation is necessary.
+Called when an item will be evicted from the cache. 
+Useful for side effects or for items like object URLs that need explicit cleanup (`revokeObjectURL`).
 
 ### Instance
 
