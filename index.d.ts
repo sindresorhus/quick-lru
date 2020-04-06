@@ -4,6 +4,13 @@ declare namespace QuickLRU {
 		The maximum number of items before evicting the least recently used items.
 		*/
 		readonly maxSize: number;
+
+		/**
+		Called right before an item is evicted from the cache.
+
+		Useful for side effects or for items like object URLs that need explicit cleanup (`revokeObjectURL`).
+		*/
+		onEviction?: <KeyType, ValueType>(key: KeyType, value: ValueType) => void;
 	}
 }
 
