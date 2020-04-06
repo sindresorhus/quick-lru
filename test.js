@@ -183,22 +183,23 @@ test('checks total cache size does not exceed `maxSize`', t => {
 	t.is(lru.oldCache.has('1'), false);
 });
 
-test('checks to see if onEviction method is called after `maxSize` is exceeded', t => {
+test('`onEviction` option method is called after `maxSize` is exceeded', t => {
+	const expectKey = '1';
+	const expectValue = 1;
 	let isCalled = false;
 	let actualKey;
-	let actualVal;
-	const expectKey = '1';
-	const expectVal = 1;
-	const onEviction = (key, val) => {
+	let actualValue;
+
+	const onEviction = (key, value) => {
 		actualKey = key;
-		actualVal = val;
+		actualValue = value;
 		isCalled = true;
 	};
 
 	const lru = new QuickLRU({maxSize: 1, onEviction});
-	lru.set(expectKey, expectVal);
+	lru.set(expectKey, expectValue);
 	lru.set('2', 2);
 	t.is(actualKey, expectKey);
-	t.is(actualVal, expectVal);
+	t.is(actualValue, expectValue);
 	t.truthy(isCalled);
 });
