@@ -201,5 +201,5 @@ test('`onEviction` option method is called after `maxSize` is exceeded', t => {
 	lru.set('2', 2);
 	t.is(actualKey, expectKey);
 	t.is(actualValue, expectValue);
-	t.truthy(isCalled);
+	t.true(isCalled);
 });
