@@ -1,5 +1,5 @@
 declare namespace QuickLRU {
-	interface Options {
+	interface Options<KeyType, ValueType> {
 		/**
 		The maximum number of items before evicting the least recently used items.
 		*/
@@ -10,7 +10,7 @@ declare namespace QuickLRU {
 
 		Useful for side effects or for items like object URLs that need explicit cleanup (`revokeObjectURL`).
 		*/
-		onEviction?: <KeyType, ValueType>(key: KeyType, value: ValueType) => void;
+		onEviction?: (key: KeyType, value: ValueType) => void;
 	}
 }
 
@@ -41,7 +41,7 @@ declare class QuickLRU<KeyType, ValueType>
 	//=> '🌈'
 	```
 	*/
-	constructor(options: QuickLRU.Options);
+	constructor(options: QuickLRU.Options<KeyType, ValueType>);
 
 	[Symbol.iterator](): IterableIterator<[KeyType, ValueType]>;
 
