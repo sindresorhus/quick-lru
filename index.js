@@ -17,7 +17,6 @@ class QuickLRU {
 		this.cache.set(key, value);
 
 		if (this.cache.size >= this.maxSize) {
-
 			if (typeof this.onEviction === 'function') {
 				for (const [key, value] of this.oldCache.entries()) {
 					this.onEviction(key, value);
