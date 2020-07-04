@@ -15,10 +15,8 @@ class QuickLRU {
 
 	_set(key, value) {
 		this.cache.set(key, value);
-		this._size++;
 
-		if (this._size >= this.maxSize) {
-			this._size = 0;
+		if (this.cache.size >= this.maxSize) {
 
 			if (typeof this.onEviction === 'function') {
 				for (const [key, value] of this.oldCache.entries()) {
@@ -116,7 +114,7 @@ class QuickLRU {
 			}
 		}
 
-		return Math.min(this._size + oldCacheSize, this.maxSize);
+		return Math.min(this.cache.size + oldCacheSize, this.maxSize);
 	}
 }
 
