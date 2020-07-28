@@ -92,6 +92,21 @@ declare class QuickLRU<KeyType, ValueType>
 	Iterable for all the values.
 	*/
 	values(): IterableIterator<ValueType>;
+
+	/**
+	Iterable for all entries, starting with the least recently used.
+	*/
+	entriesAscending(): IterableIterator<[KeyType, ValueType]>;
+
+	/**
+	Iterable for all entries, starting with the most recently used.
+	*/
+	entriesDescending(): IterableIterator<[KeyType, ValueType]>;
+
+	/**
+	Resize to fit the given maximum number of items.
+	*/
+	resize(maxSize: number): void;
 }
 
 export = QuickLRU;

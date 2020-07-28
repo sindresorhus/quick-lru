@@ -94,9 +94,23 @@ Iterable for all the keys.
 
 Iterable for all the values.
 
+#### .entriesAscending()
+
+Iterable for all entries, starting with the oldest (ascending in recency).
+
+#### .entriesDescending()
+
+Iterable for all entries, starting with the newest (descending in recency).
+
 #### .size
 
 The stored item count.
+
+#### .resize(maxSize)
+
+Update the maxSize of the QuickLRU in-place, discarding items as necessary. Insertion order is mostly preserved, though this is not a strong guarantee.
+
+Useful for on-the-fly tuning of cache sizes in live systems.
 
 ## Related
 
