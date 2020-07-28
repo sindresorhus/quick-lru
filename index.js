@@ -109,6 +109,10 @@ class QuickLRU {
 	}
 
 	get size() {
+		if (!this._size) {
+			return this.oldCache.size;
+		}
+
 		let oldCacheSize = 0;
 		for (const key of this.oldCache.keys()) {
 			if (!this.cache.has(key)) {
