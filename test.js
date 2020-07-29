@@ -171,6 +171,7 @@ test('max size', t => {
 	lru.set('1', 1);
 	lru.set('2', 2);
 	lru.set('3', 3);
+	t.is(lru.size, 3);
 	lru.set('4', 4);
 	t.is(lru.size, 3);
 });
