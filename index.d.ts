@@ -84,6 +84,11 @@ declare class QuickLRU<KeyType, ValueType>
 	clear(): void;
 
 	/**
+	Resize the cache to fit the given maximum number of items.
+	*/
+	resize(maxSize: number): void;
+
+	/**
 	Iterable for all the keys.
 	*/
 	keys(): IterableIterator<KeyType>;
@@ -102,11 +107,6 @@ declare class QuickLRU<KeyType, ValueType>
 	Iterable for all entries, starting with the most recently used.
 	*/
 	entriesDescending(): IterableIterator<[KeyType, ValueType]>;
-
-	/**
-	Resize to fit the given maximum number of items.
-	*/
-	resize(maxSize: number): void;
 }
 
 export = QuickLRU;
