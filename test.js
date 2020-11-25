@@ -223,27 +223,27 @@ test('`onEviction` option method is called after `maxSize` is exceeded', t => {
 });
 
 test('max age - should remove the item on get it again', async t => {
-	const lru = new QuickLRU({maxSize: 10, maxAge: 10});
+	const lru = new QuickLRU({maxSize: 10, maxAge: 90});
 	lru.set('1', 'test');
-	await sleep(50);
+	await sleep(200);
 	t.is(lru.get('1'), undefined);
 });
 
 test('max age - a non recent item can also expire', async t => {
-	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('1', 'test');
 	lru.set('2', 'test2');
 	lru.set('3', 'test4');
-	await sleep(50);
+	await sleep(200);
 	t.is(lru.get('1'), undefined);
 });
 
 test('max age - set the item again should refresh the expiration time', async t => {
-	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('1', 'test');
-	await sleep(5);
+	await sleep(50);
 	lru.set('1', 'test2');
-	await sleep(5);
+	await sleep(50);
 	t.is(lru.get('1'), 'test2');
 });
 
@@ -251,53 +251,53 @@ test('max age - once an item expires the eviction function should be called', as
 	t.timeout(1000);
 	const lru = new QuickLRU({
 		maxSize: 2,
-		maxAge: 10,
+		maxAge: 100,
 		onEviction() {
 			t.pass('Test passed');
 		}
 	});
 	lru.set('1', 'test');
-	await sleep(20);
+	await sleep(200);
 	t.is(lru.get('1'), undefined);
 });
 
 test('max age - peek the item should also remove the item if has expired', async t => {
-	const lru = new QuickLRU({maxSize: 10, maxAge: 10});
+	const lru = new QuickLRU({maxSize: 10, maxAge: 100});
 	lru.set('1', 'test');
-	await sleep(50);
+	await sleep(200);
 	t.is(lru.peek('1'), undefined);
 });
 
 test('max age - peek the item should also remove expired items that are not recent', async t => {
-	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('1', 'test');
 	lru.set('2', 'test');
 	lru.set('3', 'test');
-	await sleep(50);
+	await sleep(200);
 	t.is(lru.peek('1'), undefined);
 });
 
 test('max age - non recent items that are not exipred are also valid', async t => {
-	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	const lru = new QuickLRU({maxSize: 2, maxAge: 200});
 	lru.set('1', 'test');
 	lru.set('2', 'test2');
 	lru.set('3', 'test4');
-	await sleep(5);
+	await sleep(100);
 	t.is(lru.get('1'), 'test');
 });
 
 test('max age - has the item should also remove expired items', async t => {
-	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('1', 'test');
-	await sleep(50);
+	await sleep(200);
 	t.is(lru.has('1'), false);
 });
 
 test('max age - has the item should also remove expired items that are not recent', async t => {
-	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('1', 'test');
 	lru.set('2', 'test');
 	lru.set('3', 'test');
-	await sleep(50);
+	await sleep(200);
 	t.is(lru.has('1'), false);
 });

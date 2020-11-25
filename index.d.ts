@@ -6,7 +6,7 @@ declare namespace QuickLRU {
 		readonly maxSize: number;
 
 		/**
-		The maximum time in milliseconds before evicting the item from the cache. Lazy expiration upon next get() or peek() of an item
+		If maxAge milliseconds is specified for the cache, the items will have an expiration time defined by this maxAge. Lazy expiration upon next get, peek call of the item.
 		*/
 		readonly maxAge?: number;
 
