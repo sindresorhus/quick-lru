@@ -86,6 +86,30 @@ class QuickLRU {
 		this.oldCache.clear();
 		this._size = 0;
 	}
+	
+	resize(newSize) {
+		if (!(newSize && newSize > 0)) {
+			throw new TypeError('`maxSize` must be a number greater than 0');
+		}
+
+		const items = [...this.entriesAscending()];
+		const removeCount = items.length - newSize;
+		if (removeCount < 0) {
+			this.cache = new Map(items);
+			this.oldCache = new Map();
+			this._size = items.length;
+		} else {
+			if (removeCount > 0) {
+				this._emitEvictions(items.slice(0, removeCount));
+			}
+
+			this.oldCache = new Map(items.slice(removeCount));
+			this.cache = new Map();
+			this._size = 0;
+		}
+
+		this.maxSize = newSize;
+	}
 
 	* keys() {
 		for (const [key] of this) {
@@ -150,30 +174,6 @@ class QuickLRU {
 		}
 
 		return Math.min(this._size + oldCacheSize, this.maxSize);
-	}
-
-	resize(newSize) {
-		if (!(newSize && newSize > 0)) {
-			throw new TypeError('`maxSize` must be a number greater than 0');
-		}
-
-		const items = [...this.entriesAscending()];
-		const removeCount = items.length - newSize;
-		if (removeCount < 0) {
-			this.cache = new Map(items);
-			this.oldCache = new Map();
-			this._size = items.length;
-		} else {
-			if (removeCount > 0) {
-				this._emitEvictions(items.slice(0, removeCount));
-			}
-
-			this.oldCache = new Map(items.slice(removeCount));
-			this.cache = new Map();
-			this._size = 0;
-		}
-
-		this.maxSize = newSize;
 	}
 }
 
