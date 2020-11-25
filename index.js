@@ -10,8 +10,8 @@ class QuickLRU {
 			throw new TypeError('`maxAge` must be a number greater than 0');
 		}
 
-		this.maxAge = options.maxAge || 0;
 		this.maxSize = options.maxSize;
+		this.maxAge = options.maxAge || 0;
 		this.onEviction = options.onEviction;
 		this.cache = new Map();
 		this.oldCache = new Map();
