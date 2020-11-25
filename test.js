@@ -249,16 +249,102 @@ test('max age - set the item again should refresh the expiration time', async t 
 
 test('max age - once an item expires the eviction function should be called', async t => {
 	t.timeout(1000);
+	const expectKey = '1';
+	const expectValue = 'test';
+
+	let isCalled = false;
+	let actualKey;
+	let actualValue;
+	const onEviction = (key, value) => {
+		isCalled = true;
+		actualKey = key;
+		actualValue = value;
+	};
+
 	const lru = new QuickLRU({
 		maxSize: 2,
 		maxAge: 100,
-		onEviction() {
-			t.pass('Test passed');
-		}
+		onEviction
 	});
-	lru.set('1', 'test');
+
+	lru.set(expectKey, expectValue);
+
 	await sleep(200);
+
 	t.is(lru.get('1'), undefined);
+	t.true(isCalled);
+	t.is(actualKey, expectKey);
+	t.is(actualValue, expectValue);
+});
+
+test('max age - once an non recent item expires the eviction function should be called', async t => {
+	t.timeout(1000);
+	const expectKeys = ['1', '2'];
+	const expectValues = ['test', 'test2'];
+
+	let isCalled = false;
+	const actualKeys = [];
+	const actualValues = [];
+	const onEviction = (key, value) => {
+		isCalled = true;
+		actualKeys.push(key);
+		actualValues.push(value);
+	};
+
+	const lru = new QuickLRU({
+		maxSize: 2,
+		maxAge: 100,
+		onEviction
+	});
+
+	lru.set('1', 'test');
+	lru.set('2', 'test2');
+	lru.set('3', 'test3');
+	lru.set('4', 'test4');
+	lru.set('5', 'test5');
+
+	await sleep(200);
+
+	t.is(lru.get('1'), undefined);
+	t.true(isCalled);
+	t.deepEqual(actualKeys, expectKeys);
+	t.deepEqual(actualValues, expectValues);
+});
+
+test('max age - on recise max aged items should also be evicted', async t => {
+	t.timeout(1000);
+	const expectKeys = ['1', '2', '3'];
+	const expectValues = ['test', 'test2', 'test3'];
+
+	let isCalled = false;
+	const actualKeys = [];
+	const actualValues = [];
+	const onEviction = (key, value) => {
+		isCalled = true;
+		actualKeys.push(key);
+		actualValues.push(value);
+	};
+
+	const lru = new QuickLRU({
+		maxSize: 3,
+		maxAge: 100,
+		onEviction
+	});
+
+	lru.set('1', 'test');
+	lru.set('2', 'test2');
+	lru.set('3', 'test3');
+	lru.set('4', 'test4');
+	lru.set('5', 'test5');
+
+	lru.resize(2);
+
+	await sleep(200);
+
+	t.is(lru.get('1'), undefined);
+	t.true(isCalled);
+	t.deepEqual(actualKeys, expectKeys);
+	t.deepEqual(actualValues, expectValues);
 });
 
 test('max age - peek the item should also remove the item if has expired', async t => {

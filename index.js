@@ -46,8 +46,8 @@ class QuickLRU {
 		if (this._size >= this.maxSize) {
 			this._size = 0;
 			if (typeof this.onEviction === 'function') {
-				for (const [key, value] of this.oldCache.entries()) {
-					this.onEviction(key, value);
+				for (const [key, item] of this.oldCache.entries()) {
+					this.onEviction(key, item.expiry ? item.value : item);
 				}
 			}
 
@@ -61,8 +61,8 @@ class QuickLRU {
 			return;
 		}
 
-		for (const [key, value] of cache) {
-			this.onEviction(key, value);
+		for (const [key, item] of cache) {
+			this.onEviction(key, item.expiry ? item.value : item);
 		}
 	}
 
