@@ -102,7 +102,6 @@ Iterable for all the values.
 
 The stored item count.
 
-
 ## Related
 
 - [yocto-queue](https://github.com/sindresorhus/yocto-queue) - Tiny queue data structure
