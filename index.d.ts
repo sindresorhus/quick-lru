@@ -84,6 +84,13 @@ declare class QuickLRU<KeyType, ValueType>
 	clear(): void;
 
 	/**
+	Update the `maxSize` in-place, discarding items as necessary. Insertion order is mostly preserved, though this is not a strong guarantee.
+
+	Useful for on-the-fly tuning of cache sizes in live systems.
+	*/
+	resize(maxSize: number): void;
+
+	/**
 	Iterable for all the keys.
 	*/
 	keys(): IterableIterator<KeyType>;
@@ -92,6 +99,16 @@ declare class QuickLRU<KeyType, ValueType>
 	Iterable for all the values.
 	*/
 	values(): IterableIterator<ValueType>;
+
+	/**
+	Iterable for all entries, starting with the oldest (ascending in recency).
+	*/
+	entriesAscending(): IterableIterator<[KeyType, ValueType]>;
+
+	/**
+	Iterable for all entries, starting with the newest (descending in recency).
+	*/
+	entriesDescending(): IterableIterator<[KeyType, ValueType]>;
 }
 
 export = QuickLRU;
