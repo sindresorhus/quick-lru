@@ -86,7 +86,7 @@ class QuickLRU {
 		this.oldCache.clear();
 		this._size = 0;
 	}
-	
+
 	resize(newSize) {
 		if (!(newSize && newSize > 0)) {
 			throw new TypeError('`maxSize` must be a number greater than 0');
