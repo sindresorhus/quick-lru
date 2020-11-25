@@ -1,4 +1,4 @@
-# quick-lru [![Coverage Status](https://coveralls.io/repos/github/sindresorhus/quick-lru/badge.svg?branch=master)](https://coveralls.io/github/sindresorhus/quick-lru?branch=master)
+# quick-lru [![Coverage Status](https://codecov.io/gh/sindresorhus/quick-lru/branch/master/graph/badge.svg)](https://codecov.io/gh/sindresorhus/quick-lru/branch/master)
 
 > Simple [“Least Recently Used” (LRU) cache](https://en.m.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29)
 
@@ -90,6 +90,12 @@ Returns `true` if the item is removed or `false` if the item doesn't exist.
 
 Delete all items.
 
+#### .resize(maxSize)
+
+Update the `maxSize`, discarding items as necessary. Insertion order is mostly preserved, though this is not a strong guarantee.
+
+Useful for on-the-fly tuning of cache sizes in live systems.
+
 #### .keys()
 
 Iterable for all the keys.
@@ -97,6 +103,14 @@ Iterable for all the keys.
 #### .values()
 
 Iterable for all the values.
+
+#### .entriesAscending()
+
+Iterable for all entries, starting with the oldest (ascending in recency).
+
+#### .entriesDescending()
+
+Iterable for all entries, starting with the newest (descending in recency).
 
 #### .size
 

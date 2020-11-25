@@ -301,3 +301,80 @@ test('max age - has the item should also remove expired items that are not recen
 	await sleep(200);
 	t.is(lru.has('1'), false);
 });
+
+test('entriesAscending enumerates cache items oldest-first', t => {
+	const lru = new QuickLRU({maxSize: 3});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	lru.set('3', 3);
+	lru.set('3', 7);
+	lru.set('2', 8);
+	t.deepEqual([...lru.entriesAscending()], [['1', 1], ['3', 7], ['2', 8]]);
+});
+
+test('entriesDescending enumerates cache items newest-first', t => {
+	const lru = new QuickLRU({maxSize: 3});
+	lru.set('t', 1);
+	lru.set('q', 2);
+	lru.set('a', 8);
+	lru.set('t', 4);
+	lru.set('v', 3);
+	t.deepEqual([...lru.entriesDescending()], [['v', 3], ['t', 4], ['a', 8], ['q', 2]]);
+});
+
+test('resize removes older items', t => {
+	const lru = new QuickLRU({maxSize: 2});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	lru.set('3', 3);
+	lru.resize(1);
+	t.is(lru.peek('1'), undefined);
+	t.is(lru.peek('3'), 3);
+	lru.set('3', 4);
+	t.is(lru.peek('3'), 4);
+	lru.set('4', 5);
+	t.is(lru.peek('4'), 5);
+	t.is(lru.peek('2'), undefined);
+});
+
+test('resize omits evictions', t => {
+	const calls = [];
+	const onEviction = (...args) => calls.push(args);
+	const lru = new QuickLRU({maxSize: 2, onEviction});
+
+	lru.set('1', 1);
+	lru.set('2', 2);
+	lru.set('3', 3);
+	lru.resize(1);
+	t.true(calls.length >= 1);
+	t.true(calls.some(([key]) => key === '1'));
+});
+
+test('resize increases capacity', t => {
+	const lru = new QuickLRU({maxSize: 2});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	lru.resize(3);
+	lru.set('3', 3);
+	lru.set('4', 4);
+	lru.set('5', 5);
+	t.deepEqual([...lru.entriesAscending()], [['1', 1], ['2', 2], ['3', 3], ['4', 4], ['5', 5]]);
+});
+
+test('resize does not conflict with the same number of items', t => {
+	const lru = new QuickLRU({maxSize: 2});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	lru.set('3', 3);
+	lru.resize(3);
+	lru.set('4', 4);
+	lru.set('5', 5);
+	t.deepEqual([...lru.entriesAscending()], [['1', 1], ['2', 2], ['3', 3], ['4', 4], ['5', 5]]);
+});
+
+test('resize checks parameter bounds', t => {
+	const lru = new QuickLRU({maxSize: 2});
+	t.throws(() => {
+		lru.resize(-1);
+	}, /maxSize/);
+});
