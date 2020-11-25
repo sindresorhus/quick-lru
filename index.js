@@ -13,19 +13,23 @@ class QuickLRU {
 		this._size = 0;
 	}
 
+	_emitEvictions(cache) {
+		if (typeof this.onEviction !== 'function') {
+			return;
+		}
+
+		for (const [key, value] of cache) {
+			this.onEviction(key, value);
+		}
+	}
+
 	_set(key, value) {
 		this.cache.set(key, value);
 		this._size++;
 
 		if (this._size >= this.maxSize) {
 			this._size = 0;
-
-			if (typeof this.onEviction === 'function') {
-				for (const [key, value] of this.oldCache.entries()) {
-					this.onEviction(key, value);
-				}
-			}
-
+			this._emitEvictions(this.oldCache);
 			this.oldCache = this.cache;
 			this.cache = new Map();
 		}
@@ -82,6 +86,30 @@ class QuickLRU {
 		this.oldCache.clear();
 		this._size = 0;
 	}
+	
+	resize(newSize) {
+		if (!(newSize && newSize > 0)) {
+			throw new TypeError('`maxSize` must be a number greater than 0');
+		}
+
+		const items = [...this.entriesAscending()];
+		const removeCount = items.length - newSize;
+		if (removeCount < 0) {
+			this.cache = new Map(items);
+			this.oldCache = new Map();
+			this._size = items.length;
+		} else {
+			if (removeCount > 0) {
+				this._emitEvictions(items.slice(0, removeCount));
+			}
+
+			this.oldCache = new Map(items.slice(removeCount));
+			this.cache = new Map();
+			this._size = 0;
+		}
+
+		this.maxSize = newSize;
+	}
 
 	* keys() {
 		for (const [key] of this) {
@@ -96,9 +124,7 @@ class QuickLRU {
 	}
 
 	* [Symbol.iterator]() {
-		for (const item of this.cache) {
-			yield item;
-		}
+		yield * this.cache;
 
 		for (const item of this.oldCache) {
 			const [key] = item;
@@ -106,6 +132,33 @@ class QuickLRU {
 				yield item;
 			}
 		}
+	}
+
+	* entriesDescending() {
+		let items = [...this.cache];
+		for (let i = items.length - 1; i >= 0; --i) {
+			yield items[i];
+		}
+
+		items = [...this.oldCache];
+		for (let i = items.length - 1; i >= 0; --i) {
+			const item = items[i];
+			const [key] = item;
+			if (!this.cache.has(key)) {
+				yield item;
+			}
+		}
+	}
+
+	* entriesAscending() {
+		for (const item of this.oldCache) {
+			const [key] = item;
+			if (!this.cache.has(key)) {
+				yield item;
+			}
+		}
+
+		yield * this.cache;
 	}
 
 	get size() {

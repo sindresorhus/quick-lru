@@ -86,6 +86,12 @@ Returns `true` if the item is removed or `false` if the item doesn't exist.
 
 Delete all items.
 
+#### .resize(maxSize)
+
+Update the `maxSize`, discarding items as necessary. Insertion order is mostly preserved, though this is not a strong guarantee.
+
+Useful for on-the-fly tuning of cache sizes in live systems.
+
 #### .keys()
 
 Iterable for all the keys.
@@ -93,6 +99,14 @@ Iterable for all the keys.
 #### .values()
 
 Iterable for all the values.
+
+#### .entriesAscending()
+
+Iterable for all entries, starting with the oldest (ascending in recency).
+
+#### .entriesDescending()
+
+Iterable for all entries, starting with the newest (descending in recency).
 
 #### .size
 
