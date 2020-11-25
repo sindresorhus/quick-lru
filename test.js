@@ -9,10 +9,20 @@ const lruWithDuplicates = () => {
 	return lru;
 };
 
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 test('main', t => {
 	t.throws(() => {
 		new QuickLRU(); // eslint-disable-line no-new
 	}, /maxSize/);
+});
+
+test('wrong max age', t => {
+	t.throws(() => {
+		new QuickLRU({maxSize: 10, maxAge: 0}); // eslint-disable-line no-new
+	}, /maxAge/);
 });
 
 test('.get() / .set()', t => {
@@ -142,12 +152,19 @@ test('.[Symbol.iterator]()', t => {
 	lru.set('1', 1);
 	lru.set('2', 2);
 	lru.set('3', 3);
-	t.deepEqual([...lru].sort(), [['1', 1], ['2', 2], ['3', 3]]);
+	t.deepEqual([...lru].sort(), [
+		['1', 1],
+		['2', 2],
+		['3', 3]
+	]);
 });
 
 test('.[Symbol.iterator]() - accounts for duplicates', t => {
 	const lru = lruWithDuplicates();
-	t.deepEqual([...lru].sort(), [['key', 'value'], ['keyDupe', 2]]);
+	t.deepEqual([...lru].sort(), [
+		['key', 'value'],
+		['keyDupe', 2]
+	]);
 });
 
 test('.size', t => {
@@ -203,4 +220,84 @@ test('`onEviction` option method is called after `maxSize` is exceeded', t => {
 	t.is(actualKey, expectKey);
 	t.is(actualValue, expectValue);
 	t.true(isCalled);
+});
+
+test('max age should remove the item on get it again', async t => {
+	const lru = new QuickLRU({maxSize: 10, maxAge: 10});
+	lru.set('1', 'test');
+	await sleep(50);
+	t.is(lru.get('1'), null);
+});
+
+test('a non recent item can also expire', async t => {
+	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	lru.set('1', 'test');
+	lru.set('2', 'test2');
+	lru.set('3', 'test4');
+	await sleep(50);
+	t.is(lru.get('1'), null);
+});
+
+test('set the item again should refresh the expiration time', async t => {
+	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	lru.set('1', 'test');
+	await sleep(5);
+	lru.set('1', 'test2');
+	await sleep(5);
+	t.is(lru.get('1'), 'test2');
+});
+
+test('once an item expires the eviction function should be called', async t => {
+	t.timeout(1000);
+	const lru = new QuickLRU({
+		maxSize: 2,
+		maxAge: 10,
+		onEviction() {
+			t.pass('Test passed');
+		}
+	});
+	lru.set('1', 'test');
+	await sleep(20);
+	t.is(lru.get('1'), null);
+});
+
+test('peek the item should also remove the item if has expired', async t => {
+	const lru = new QuickLRU({maxSize: 10, maxAge: 10});
+	lru.set('1', 'test');
+	await sleep(50);
+	t.is(lru.peek('1'), null);
+});
+
+test('peek the item should also remove expired items that are not recent', async t => {
+	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	lru.set('1', 'test');
+	lru.set('2', 'test');
+	lru.set('3', 'test');
+	await sleep(50);
+	t.is(lru.peek('1'), null);
+});
+
+test('non recent items that are not exipred are also valid', async t => {
+	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	lru.set('1', 'test');
+	lru.set('2', 'test2');
+	lru.set('3', 'test4');
+	await sleep(5);
+	t.is(lru.get('1'), 'test');
+});
+
+test('has the item should also remove expired items', async t => {
+	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	lru.set('1', 'test');
+	await sleep(50);
+	t.is(lru.has('1'), false);
+});
+
+test('has the item should also remove expired items that are not recent', async t => {
+	const lru = new QuickLRU({maxSize: 2, maxAge: 10});
+	lru.set('1', 'test');
+	lru.set('2', 'test');
+	lru.set('3', 'test');
+	await sleep(50);
+	t.is(lru.has('1'), false);
 });

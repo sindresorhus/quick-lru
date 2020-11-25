@@ -6,6 +6,11 @@ class QuickLRU {
 			throw new TypeError('`maxSize` must be a number greater than 0');
 		}
 
+		if (typeof options.maxAge === 'number' && options.maxAge === 0) {
+			throw new TypeError('`maxAge` must be a number greater than 0');
+		}
+
+		this.maxAge = options.maxAge || 0;
 		this.maxSize = options.maxSize;
 		this.onEviction = options.onEviction;
 		this.cache = new Map();
@@ -13,8 +18,29 @@ class QuickLRU {
 		this._size = 0;
 	}
 
-	_set(key, value) {
-		this.cache.set(key, value);
+	_hasExpired(key, item) {
+		if (item.expiry <= new Date().getTime()) {
+			if (typeof this.onEviction === 'function') {
+				this.onEviction(key, item.value);
+			}
+
+			this.delete(key);
+			return null;
+		}
+
+		return item.value;
+	}
+
+	_set(key, value, expiry) {
+		if (this.maxAge > 0) {
+			this.cache.set(key, {
+				value,
+				expiry: expiry || new Date().getTime() + this.maxAge
+			});
+		} else {
+			this.cache.set(key, value);
+		}
+
 		this._size++;
 
 		if (this._size >= this.maxSize) {
@@ -33,20 +59,42 @@ class QuickLRU {
 
 	get(key) {
 		if (this.cache.has(key)) {
+			if (this.maxAge > 0) {
+				const item = this.cache.get(key);
+				return this._hasExpired(key, item);
+			}
+
 			return this.cache.get(key);
 		}
 
 		if (this.oldCache.has(key)) {
-			const value = this.oldCache.get(key);
+			const item = this.oldCache.get(key);
 			this.oldCache.delete(key);
-			this._set(key, value);
-			return value;
+			if (this.maxAge > 0) {
+				const value = this._hasExpired(key, item);
+
+				if (value) {
+					this._set(key, value, item.expiry);
+				}
+
+				return value;
+			}
+
+			this._set(key, item);
+			return item;
 		}
 	}
 
 	set(key, value) {
 		if (this.cache.has(key)) {
-			this.cache.set(key, value);
+			if (this.maxAge > 0) {
+				this.cache.set(key, {
+					value,
+					expiry: new Date().getTime() + this.maxAge
+				});
+			} else {
+				this.cache.set(key, value);
+			}
 		} else {
 			this._set(key, value);
 		}
@@ -55,15 +103,30 @@ class QuickLRU {
 	}
 
 	has(key) {
+		if (this.maxAge > 0) {
+			return Boolean(this._hasExpired(
+				key,
+				this.cache.get(key) || this.oldCache.get(key)
+			));
+		}
+
 		return this.cache.has(key) || this.oldCache.has(key);
 	}
 
 	peek(key) {
 		if (this.cache.has(key)) {
+			if (this.maxAge > 0) {
+				return this._hasExpired(key, this.cache.get(key));
+			}
+
 			return this.cache.get(key);
 		}
 
 		if (this.oldCache.has(key)) {
+			if (this.maxAge > 0) {
+				return this._hasExpired(key, this.oldCache.get(key));
+			}
+
 			return this.oldCache.get(key);
 		}
 	}

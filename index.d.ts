@@ -6,6 +6,11 @@ declare namespace QuickLRU {
 		readonly maxSize: number;
 
 		/**
+		The maximum time in milliseconds before evicting the item from the cache. Lazy expiration upon next get() or peek() of an item
+		*/
+		readonly maxAge?: number;
+
+		/**
 		Called right before an item is evicted from the cache.
 
 		Useful for side effects or for items like object URLs that need explicit cleanup (`revokeObjectURL`).
