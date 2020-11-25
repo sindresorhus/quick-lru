@@ -1,7 +1,7 @@
 import {expectType} from 'tsd';
 import QuickLRU = require('.');
 
-const lru = new QuickLRU<string, number>({maxSize: 1000, maxAge:200});
+const lru = new QuickLRU<string, number>({maxSize: 1000, maxAge: 200});
 
 expectType<QuickLRU<string, number>>(lru.set('🦄', 1).set('🌈', 2));
 expectType<number | undefined>(lru.get('🦄'));
