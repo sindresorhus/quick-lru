@@ -88,7 +88,7 @@ Delete all items.
 
 #### .resize(maxSize)
 
-Update the maxSize of the QuickLRU in-place, discarding items as necessary. Insertion order is mostly preserved, though this is not a strong guarantee.
+Update the `maxSize`, discarding items as necessary. Insertion order is mostly preserved, though this is not a strong guarantee.
 
 Useful for on-the-fly tuning of cache sizes in live systems.
 
