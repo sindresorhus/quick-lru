@@ -19,13 +19,13 @@ class QuickLRU {
 	}
 
 	_hasExpired(key, item) {
-		if (item.expiry <= new Date().getTime()) {
+		if (item.expiry <= Date.now()) {
 			if (typeof this.onEviction === 'function') {
 				this.onEviction(key, item.value);
 			}
 
 			this.delete(key);
-			return null;
+			return;
 		}
 
 		return item.value;
@@ -35,7 +35,7 @@ class QuickLRU {
 		if (this.maxAge > 0) {
 			this.cache.set(key, {
 				value,
-				expiry: expiry || new Date().getTime() + this.maxAge
+				expiry: expiry || Date.now() + this.maxAge
 			});
 		} else {
 			this.cache.set(key, value);
@@ -90,7 +90,7 @@ class QuickLRU {
 			if (this.maxAge > 0) {
 				this.cache.set(key, {
 					value,
-					expiry: new Date().getTime() + this.maxAge
+					expiry: Date.now() + this.maxAge
 				});
 			} else {
 				this.cache.set(key, value);

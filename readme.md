@@ -17,7 +17,7 @@ $ npm install quick-lru
 ```js
 const QuickLRU = require('quick-lru');
 
-const lru = new QuickLRU({maxSize: 1000, maxAge:100});
+const lru = new QuickLRU({maxSize: 1000});
 
 lru.set('🦄', '🌈');
 
@@ -44,6 +44,10 @@ Type: `object`
 Type: `number`
 
 The maximum number of items before evicting the least recently used items.
+
+#### maxAge
+
+If maxAge milliseconds is specified for the cache, the items will have an expiration time defined by this maxAge. Lazy expiration upon next get, peek call of the item.
 
 #### onEviction
 
@@ -97,10 +101,6 @@ Iterable for all the values.
 #### .size
 
 The stored item count.
-
-#### maxAge
-
-If maxAge milliseconds is specified for the cache, the items will have an expiration time defined by this maxAge. Lazy expiration upon next get, peek call of the item.
 
 
 ## Related
