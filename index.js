@@ -34,8 +34,7 @@ class QuickLRU {
 				this.onEviction(key, item.value);
 			}
 
-			this.delete(key);
-			return true;
+			return this.delete(key);
 		}
 
 		return false;
@@ -87,29 +86,24 @@ class QuickLRU {
 
 		if (this.oldCache.has(key)) {
 			const item = this.oldCache.get(key);
-			this.oldCache.delete(key);
 			if (this.maxAge > 0) {
-				const value = this._getOrDeleteIfExpired(key, item);
-
-				if (value !== undefined) {
+				if (!this._deleteIfExpired(key, item)) {
+					this.oldCache.delete(key);
 					this._set(key, item.value, true, item.expiry);
+					return item.value;
 				}
 
-				return value;
+				return;
 			}
 
+			this.oldCache.delete(key);
 			this._set(key, item);
 			return item;
 		}
 	}
 
 	set(key, value) {
-		if (this.cache.has(key)) {
-			this._set(key, value, true);
-		} else {
-			this._set(key, value, false);
-		}
-
+		this._set(key, value, this.cache.has(key));
 		return this;
 	}
 

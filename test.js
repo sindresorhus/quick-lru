@@ -231,7 +231,7 @@ test('max age - should remove the item if has expired on call get() method upon 
 
 test('max age - a non-recent item can also expire', async t => {
 	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
-	lru.set('1', 'test');
+	lru.set('1', 'test1');
 	lru.set('2', 'test2');
 	lru.set('3', 'test4');
 	await sleep(200);
