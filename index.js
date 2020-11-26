@@ -93,14 +93,14 @@ class QuickLRU {
 			const item = this.oldCache.get(key);
 			if (this.maxAge > 0) {
 				if (!this._deleteIfExpired(key, item)) {
-					_moveToRecent(key, item.value, item.expiry);
+					this._moveToRecent(key, item.value, item.expiry);
 					return item.value;
 				}
 
 				return;
 			}
 
-			_moveToRecent(key, item.value, item.expiry);
+			this._moveToRecent(key, item.value, item.expiry);
 			return item;
 		}
 	}
