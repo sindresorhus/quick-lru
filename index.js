@@ -100,7 +100,7 @@ class QuickLRU {
 				return;
 			}
 
-			this._moveToRecent(key, item.value, item.expiry);
+			this._moveToRecent(key, item, item.expiry);
 			return item;
 		}
 	}
