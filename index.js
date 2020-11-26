@@ -48,13 +48,13 @@ class QuickLRU {
 		return item.value;
 	}
 
-	_set(key, value, refresh = false, expiry = Date.now() + this.maxAge) {
+	_set(key, value, updateValue = false, expiry = Date.now() + this.maxAge) {
 		this.cache.set(key, this.maxAge > 0 ? {
 			value,
 			expiry
 		} : value);
 
-		if (refresh === false) {
+		if (updateValue === false) {
 			this._size++;
 
 			if (this._size >= this.maxSize) {
@@ -77,6 +77,11 @@ class QuickLRU {
 		return item;
 	}
 
+	_moveToRecent(key, value, expiry) {
+		this.oldCache.delete(key);
+		this._set(key, value, false, expiry);
+	}
+
 	get(key) {
 		if (this.cache.has(key)) {
 			const item = this.cache.get(key);
@@ -88,16 +93,14 @@ class QuickLRU {
 			const item = this.oldCache.get(key);
 			if (this.maxAge > 0) {
 				if (!this._deleteIfExpired(key, item)) {
-					this.oldCache.delete(key);
-					this._set(key, item.value, true, item.expiry);
+					_moveToRecent(key, item.value, item.expiry);
 					return item.value;
 				}
 
 				return;
 			}
 
-			this.oldCache.delete(key);
-			this._set(key, item);
+			_moveToRecent(key, item.value, item.expiry);
 			return item;
 		}
 	}
