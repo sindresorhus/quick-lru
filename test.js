@@ -311,7 +311,7 @@ test('max age - once an non-recent item expires, the eviction function should be
 	t.deepEqual(actualValues, expectValues);
 });
 
-test('max age - on recise max aged items should also be evicted', async t => {
+test('max age - on resize, max aged items should also be evicted', async t => {
 	t.timeout(1000);
 	const expectKeys = ['1', '2', '3'];
 	const expectValues = ['test', 'test2', 'test3'];
