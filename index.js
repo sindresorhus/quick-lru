@@ -18,62 +18,71 @@ class QuickLRU {
 		this._size = 0;
 	}
 
-	_getOrDeleteIfExpired(key, item) {
-		if (item.expiry <= Date.now()) {
-			if (typeof this.onEviction === 'function') {
-				this.onEviction(key, item.value);
-			}
-
-			this.delete(key);
-			return;
-		}
-
-		return item.value;
-	}
-
-	_set(key, value, expiry) {
-		if (this.maxAge > 0) {
-			this.cache.set(key, {
-				value,
-				expiry: expiry || (Date.now() + this.maxAge)
-			});
-		} else {
-			this.cache.set(key, value);
-		}
-
-		this._size++;
-
-		if (this._size >= this.maxSize) {
-			this._size = 0;
-			if (typeof this.onEviction === 'function') {
-				for (const [key, item] of this.oldCache.entries()) {
-					this.onEviction(key, item.expiry ? item.value : item);
-				}
-			}
-
-			this.oldCache = this.cache;
-			this.cache = new Map();
-		}
-	}
-
 	_emitEvictions(cache) {
 		if (typeof this.onEviction !== 'function') {
 			return;
 		}
 
 		for (const [key, item] of cache) {
-			this.onEviction(key, item.expiry ? item.value : item);
+			this.onEviction(key, this.maxAge > 0 ? item.value : item);
 		}
+	}
+
+	_deleteIfExpired(key, item) {
+		if (item.expiry <= Date.now()) {
+			if (typeof this.onEviction === 'function') {
+				this.onEviction(key, item.value);
+			}
+
+			this.delete(key);
+			return true;
+		}
+
+		return false;
+	}
+
+	_getOrDeleteIfExpired(key, item) {
+		if (this._deleteIfExpired(key, item)) {
+			return;
+		}
+
+		return item.value;
+	}
+
+	_set(key, value, refresh = false, expiry = Date.now() + this.maxAge) {
+		this.cache.set(key, this.maxAge > 0 ? {
+			value,
+			expiry
+		} : value);
+
+		if (refresh === false) {
+			this._size++;
+
+			if (this._size >= this.maxSize) {
+				this._size = 0;
+				this._emitEvictions(this.oldCache);
+
+				this.oldCache = this.cache;
+				this.cache = new Map();
+			}
+		}
+	}
+
+	_peek(key, cache) {
+		const item = cache.get(key);
+
+		if (this.maxAge > 0) {
+			return this._getOrDeleteIfExpired(key, item);
+		}
+
+		return item;
 	}
 
 	get(key) {
 		if (this.cache.has(key)) {
-			if (this.maxAge > 0) {
-				const item = this.cache.get(key);
-				return this._getOrDeleteIfExpired(key, item);
-			}
+			const item = this.cache.get(key);
 
-			return this.cache.get(key);
+			return this.maxAge > 0 ? this._getOrDeleteIfExpired(key, item) : item;
 		}
 
 		if (this.oldCache.has(key)) {
@@ -82,8 +91,8 @@ class QuickLRU {
 			if (this.maxAge > 0) {
 				const value = this._getOrDeleteIfExpired(key, item);
 
-				if (value) {
-					this._set(key, value, item.expiry);
+				if (value !== undefined) {
+					this._set(key, item.value, true, item.expiry);
 				}
 
 				return value;
@@ -96,16 +105,9 @@ class QuickLRU {
 
 	set(key, value) {
 		if (this.cache.has(key)) {
-			if (this.maxAge > 0) {
-				this.cache.set(key, {
-					value,
-					expiry: Date.now() + this.maxAge
-				});
-			} else {
-				this.cache.set(key, value);
-			}
+			this._set(key, value, true);
 		} else {
-			this._set(key, value);
+			this._set(key, value, false);
 		}
 
 		return this;
@@ -113,10 +115,12 @@ class QuickLRU {
 
 	has(key) {
 		if (this.maxAge > 0) {
-			return Boolean(this._getOrDeleteIfExpired(
+			const item = this.cache.get(key) || this.oldCache.get(key);
+
+			return !this._deleteIfExpired(
 				key,
-				this.cache.get(key) || this.oldCache.get(key)
-			));
+				item
+			);
 		}
 
 		return this.cache.has(key) || this.oldCache.has(key);
@@ -124,19 +128,11 @@ class QuickLRU {
 
 	peek(key) {
 		if (this.cache.has(key)) {
-			if (this.maxAge > 0) {
-				return this._getOrDeleteIfExpired(key, this.cache.get(key));
-			}
-
-			return this.cache.get(key);
+			return this._peek(key, this.cache);
 		}
 
 		if (this.oldCache.has(key)) {
-			if (this.maxAge > 0) {
-				return this._getOrDeleteIfExpired(key, this.oldCache.get(key));
-			}
-
-			return this.oldCache.get(key);
+			return this._peek(key, this.oldCache);
 		}
 	}
 

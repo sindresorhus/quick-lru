@@ -47,7 +47,7 @@ The maximum number of items before evicting the least recently used items.
 
 #### maxAge
 
-If maxAge milliseconds is specified for the cache, the items will have an expiration time defined by this maxAge. Lazy expiration upon next get, peek call of the item.
+Milliseconds an item will remain in cache; lazy expiration upon next get(), peek() or has().
 
 #### onEviction
 
