@@ -48,7 +48,7 @@ class QuickLRU {
 		return item.value;
 	}
 
-	_set(key, value, updateValue = false, expiry = Date.now() + this.maxAge) {
+	_set(key, value, updateValue, expiry = Date.now() + this.maxAge) {
 		this.cache.set(key, this.maxAge > 0 ? {
 			value,
 			expiry
@@ -100,7 +100,7 @@ class QuickLRU {
 				return;
 			}
 
-			this._moveToRecent(key, item, item.expiry);
+			this._moveToRecent(key, item);
 			return item;
 		}
 	}
