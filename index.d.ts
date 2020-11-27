@@ -6,7 +6,9 @@ declare namespace QuickLRU {
 		readonly maxSize: number;
 
 		/**
-		Milliseconds an item will remain in cache; lazy expiration upon next get(), peek() or has() call.
+		The maximum number of milliseconds an item should remain in cache.
+
+		Lazy expiration upon the next `.get()`, `.peek()`, or `.has()` call.
 		*/
 		readonly maxAge?: number;
 
