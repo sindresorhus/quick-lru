@@ -15,16 +15,16 @@ $ npm install quick-lru
 ## Usage
 
 ```js
-const QuickLRU = require("quick-lru");
+const QuickLRU = require('quick-lru');
 
-const lru = new QuickLRU({ maxSize: 1000 });
+const lru = new QuickLRU({maxSize: 1000});
 
-lru.set("🦄", "🌈");
+lru.set('🦄', '🌈');
 
-lru.has("🦄");
+lru.has('🦄');
 //=> true
 
-lru.get("🦄");
+lru.get('🦄');
 //=> '🌈'
 ```
 
@@ -40,12 +40,15 @@ Type: `object`
 
 #### maxSize
 
-_Required_\
+*Required*\
 Type: `number`
 
 The maximum number of items before evicting the least recently used items.
 
 #### maxAge
+
+_Optional_\
+Type: `number`
 
 The maximum number of milliseconds an item should remain in cache.
 By default maxAge will be 0 which means that items will never expires.
@@ -56,7 +59,7 @@ Individual expiration of an item can be specified by the `set(key, value, expiry
 
 #### onEviction
 
-_Optional_\
+*Optional*\
 Type: `(key, value) => void`
 
 Called right before an item is evicted from the cache.
