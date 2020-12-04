@@ -629,7 +629,6 @@ test('resize increases capacity', t => {
 	lru.set('4', 4);
 	lru.set('5', 5);
 	t.deepEqual([...lru.entriesAscending()], [['1', 1], ['2', 2], ['3', 3], ['4', 4], ['5', 5]]);
-
 });
 
 test('resize does not conflict with the same number of items', t => {
