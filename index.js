@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
 class QuickLRU {
 	constructor(options = {}) {
 		if (!(options.maxSize && options.maxSize > 0)) {
-			throw new TypeError('`maxSize` must be a number greater than 0');
+			throw new TypeError("`maxSize` must be a number greater than 0");
 		}
 
-		if (typeof options.maxAge === 'number' && options.maxAge === 0) {
-			throw new TypeError('`maxAge` must be a number greater than 0');
+		if (typeof options.maxAge === "number" && options.maxAge === 0) {
+			throw new TypeError("`maxAge` must be a number greater than 0");
 		}
 
 		this.maxSize = options.maxSize;
@@ -19,7 +19,7 @@ class QuickLRU {
 	}
 
 	_emitEvictions(cache) {
-		if (typeof this.onEviction !== 'function') {
+		if (typeof this.onEviction !== "function") {
 			return;
 		}
 
@@ -29,8 +29,8 @@ class QuickLRU {
 	}
 
 	_deleteIfExpired(key, item) {
-		if (typeof item.expiry === 'number' && item.expiry <= Date.now()) {
-			if (typeof this.onEviction === 'function') {
+		if (typeof item.expiry === "number" && item.expiry <= Date.now()) {
+			if (typeof this.onEviction === "function") {
 				this.onEviction(key, item.value);
 			}
 
@@ -74,7 +74,7 @@ class QuickLRU {
 		this._set(key, item);
 	}
 
-	* _entriesAscending() {
+	*_entriesAscending() {
 		for (const item of this.oldCache) {
 			const [key, value] = item;
 			if (!this.cache.has(key)) {
@@ -117,7 +117,7 @@ class QuickLRU {
 				expiry
 			});
 		} else {
-			this._set(key, {value, expiry});
+			this._set(key, { value, expiry });
 		}
 	}
 
@@ -160,7 +160,7 @@ class QuickLRU {
 
 	resize(newSize) {
 		if (!(newSize && newSize > 0)) {
-			throw new TypeError('`maxSize` must be a number greater than 0');
+			throw new TypeError("`maxSize` must be a number greater than 0");
 		}
 
 		const items = [...this._entriesAscending()];
@@ -182,19 +182,19 @@ class QuickLRU {
 		this.maxSize = newSize;
 	}
 
-	* keys() {
+	*keys() {
 		for (const [key] of this) {
 			yield key;
 		}
 	}
 
-	* values() {
+	*values() {
 		for (const [, value] of this) {
 			yield value;
 		}
 	}
 
-	* [Symbol.iterator]() {
+	*[Symbol.iterator]() {
 		for (const item of this.cache) {
 			const [key, value] = item;
 			const deleted = this._deleteIfExpired(key, value);
@@ -214,7 +214,7 @@ class QuickLRU {
 		}
 	}
 
-	* entriesDescending() {
+	*entriesDescending() {
 		let items = [...this.cache];
 		for (let i = items.length - 1; i >= 0; --i) {
 			const item = items[i];
@@ -238,7 +238,7 @@ class QuickLRU {
 		}
 	}
 
-	* entriesAscending() {
+	*entriesAscending() {
 		for (const [key, value] of this._entriesAscending()) {
 			yield [key, value.value];
 		}

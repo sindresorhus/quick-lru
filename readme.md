@@ -47,7 +47,11 @@ The maximum number of items before evicting the least recently used items.
 
 #### maxAge
 
-Milliseconds an item will remain in cache; lazy expiration upon next write or read operation. Individual expiration of an item can be specified by the `set(key, value, expiry)` method.
+The maximum number of milliseconds an item should remain in cache.
+
+Lazy expiration upon the next `write` or `read` call.
+
+Individual expiration of an item can be specified by the `set(key, value, expiry)` method.
 
 #### onEviction
 
