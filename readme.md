@@ -15,16 +15,16 @@ $ npm install quick-lru
 ## Usage
 
 ```js
-const QuickLRU = require('quick-lru');
+const QuickLRU = require("quick-lru");
 
-const lru = new QuickLRU({maxSize: 1000});
+const lru = new QuickLRU({ maxSize: 1000 });
 
-lru.set('🦄', '🌈');
+lru.set("🦄", "🌈");
 
-lru.has('🦄');
+lru.has("🦄");
 //=> true
 
-lru.get('🦄');
+lru.get("🦄");
 //=> '🌈'
 ```
 
@@ -40,18 +40,18 @@ Type: `object`
 
 #### maxSize
 
-*Required*\
+_Required_\
 Type: `number`
 
 The maximum number of items before evicting the least recently used items.
 
 #### maxAge
 
-Milliseconds an item will remain in cache; lazy expiration upon next get(), peek() or has().
+Milliseconds an item will remain in cache; lazy expiration upon next write or read operation. Individual expiration of an item can be specified by the `set(key, value, expiry)` method.
 
 #### onEviction
 
-*Optional*\
+_Optional_\
 Type: `(key, value) => void`
 
 Called right before an item is evicted from the cache.
@@ -64,7 +64,7 @@ The instance is an [`Iterable`](https://developer.mozilla.org/en/docs/Web/JavaSc
 
 Both `key` and `value` can be of any type.
 
-#### .set(key, value)
+#### .set(key, value, expiry)
 
 Set an item. Returns the instance.
 

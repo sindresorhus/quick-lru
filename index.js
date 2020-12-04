@@ -24,12 +24,12 @@ class QuickLRU {
 		}
 
 		for (const [key, item] of cache) {
-			this.onEviction(key, this.maxAge > 0 ? item.value : item);
+			this.onEviction(key, item.value);
 		}
 	}
 
 	_deleteIfExpired(key, item) {
-		if (item.expiry <= Date.now()) {
+		if (typeof item.expiry === 'number' && item.expiry <= Date.now()) {
 			if (typeof this.onEviction === 'function') {
 				this.onEviction(key, item.value);
 			}
@@ -41,86 +41,96 @@ class QuickLRU {
 	}
 
 	_getOrDeleteIfExpired(key, item) {
-		if (this._deleteIfExpired(key, item)) {
-			return;
+		const deleted = this._deleteIfExpired(key, item);
+		if (deleted === false) {
+			return item.value;
 		}
-
-		return item.value;
 	}
 
-	_set(key, value, updateValue, expiry = Date.now() + this.maxAge) {
-		this.cache.set(key, this.maxAge > 0 ? {
-			value,
-			expiry
-		} : value);
-
-		if (updateValue === false) {
-			this._size++;
-
-			if (this._size >= this.maxSize) {
-				this._size = 0;
-				this._emitEvictions(this.oldCache);
-
-				this.oldCache = this.cache;
-				this.cache = new Map();
-			}
-		}
+	_getItemValue(key, item) {
+		return item.expiry ? this._getOrDeleteIfExpired(key, item) : item.value;
 	}
 
 	_peek(key, cache) {
 		const item = cache.get(key);
 
-		if (this.maxAge > 0) {
-			return this._getOrDeleteIfExpired(key, item);
-		}
-
-		return item;
+		return this._getItemValue(key, item);
 	}
 
-	_moveToRecent(key, value, expiry) {
+	_set(key, value) {
+		this.cache.set(key, value);
+		this._size++;
+
+		if (this._size >= this.maxSize) {
+			this._size = 0;
+			this._emitEvictions(this.oldCache);
+			this.oldCache = this.cache;
+			this.cache = new Map();
+		}
+	}
+
+	_moveToRecent(key, item) {
 		this.oldCache.delete(key);
-		this._set(key, value, false, expiry);
+		this._set(key, item);
+	}
+
+	* _entriesAscending() {
+		for (const item of this.oldCache) {
+			const [key, value] = item;
+			if (!this.cache.has(key)) {
+				const deleted = this._deleteIfExpired(key, value);
+				if (deleted === false) {
+					yield item;
+				}
+			}
+		}
+
+		for (const item of this.cache) {
+			const [key, value] = item;
+			const deleted = this._deleteIfExpired(key, value);
+			if (deleted === false) {
+				yield item;
+			}
+		}
 	}
 
 	get(key) {
 		if (this.cache.has(key)) {
 			const item = this.cache.get(key);
 
-			return this.maxAge > 0 ? this._getOrDeleteIfExpired(key, item) : item;
+			return this._getItemValue(key, item);
 		}
 
 		if (this.oldCache.has(key)) {
 			const item = this.oldCache.get(key);
-			if (this.maxAge > 0) {
-				if (!this._deleteIfExpired(key, item)) {
-					this._moveToRecent(key, item.value, item.expiry);
-					return item.value;
-				}
-
-				return;
+			if (this._deleteIfExpired(key, item) === false) {
+				this._moveToRecent(key, item);
+				return item.value;
 			}
-
-			this._moveToRecent(key, item);
-			return item;
 		}
 	}
 
-	set(key, value) {
-		this._set(key, value, this.cache.has(key));
-		return this;
+	set(key, value, expiry = this.maxAge > 0 ? Date.now() + this.maxAge : null) {
+		if (this.cache.has(key)) {
+			this.cache.set(key, {
+				value,
+				expiry
+			});
+		} else {
+			this._set(key, {value, expiry});
+		}
 	}
 
 	has(key) {
-		if (this.maxAge > 0) {
-			const item = this.cache.get(key) || this.oldCache.get(key);
-
-			return !this._deleteIfExpired(
-				key,
-				item
-			);
+		if (this.cache.has(key)) {
+			return !this._deleteIfExpired(key, this.cache.get(key));
 		}
 
-		return this.cache.has(key) || this.oldCache.has(key);
+		if (this.oldCache.has(key)) {
+			return !this._deleteIfExpired(key, this.oldCache.get(key));
+		}
+
+		return false;
 	}
 
 	peek(key) {
@@ -153,7 +163,7 @@ class QuickLRU {
 			throw new TypeError('`maxSize` must be a number greater than 0');
 		}
 
-		const items = [...this.entriesAscending()];
+		const items = [...this._entriesAscending()];
 		const removeCount = items.length - newSize;
 		if (removeCount < 0) {
 			this.cache = new Map(items);
@@ -185,12 +195,21 @@ class QuickLRU {
 	}
 
 	* [Symbol.iterator]() {
-		yield * this.cache;
+		for (const item of this.cache) {
+			const [key, value] = item;
+			const deleted = this._deleteIfExpired(key, value);
+			if (deleted === false) {
+				yield [key, value.value];
+			}
+		}
 
 		for (const item of this.oldCache) {
-			const [key] = item;
+			const [key, value] = item;
 			if (!this.cache.has(key)) {
-				yield item;
+				const deleted = this._deleteIfExpired(key, value);
+				if (deleted === false) {
+					yield [key, value.value];
+				}
 			}
 		}
 	}
@@ -198,28 +217,31 @@ class QuickLRU {
 	* entriesDescending() {
 		let items = [...this.cache];
 		for (let i = items.length - 1; i >= 0; --i) {
-			yield items[i];
+			const item = items[i];
+			const [key, value] = item;
+			const deleted = this._deleteIfExpired(key, value);
+			if (deleted === false) {
+				yield [key, value.value];
+			}
 		}
 
 		items = [...this.oldCache];
 		for (let i = items.length - 1; i >= 0; --i) {
 			const item = items[i];
-			const [key] = item;
+			const [key, value] = item;
 			if (!this.cache.has(key)) {
-				yield item;
+				const deleted = this._deleteIfExpired(key, value);
+				if (deleted === false) {
+					yield [key, value.value];
+				}
 			}
 		}
 	}
 
 	* entriesAscending() {
-		for (const item of this.oldCache) {
-			const [key] = item;
-			if (!this.cache.has(key)) {
-				yield item;
-			}
+		for (const [key, value] of this._entriesAscending()) {
+			yield [key, value.value];
 		}
-
-		yield * this.cache;
 	}
 
 	get size() {

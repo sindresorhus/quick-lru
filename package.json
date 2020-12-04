@@ -36,6 +36,7 @@
 	"devDependencies": {
 		"ava": "^2.4.0",
 		"nyc": "^15.1.0",
+		"statistics": "^3.3.0",
 		"tsd": "^0.13.1",
 		"xo": "^0.35.0"
 	}

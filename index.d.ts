@@ -19,7 +19,8 @@ declare namespace QuickLRU {
 	}
 }
 
-declare class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueType]> {
+declare class QuickLRU<KeyType, ValueType>
+	implements Iterable<[KeyType, ValueType]> {
 	/**
 	The stored item count.
 	*/
@@ -54,7 +55,7 @@ declare class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueTy
 
 	@returns The list instance.
 	*/
-	set(key: KeyType, value: ValueType): this;
+	set(key: KeyType, value: ValueType, expiry?: number): this;
 
 	/**
 	Get an item.
