@@ -254,7 +254,7 @@ test('set(expiry) - local expires prevails over the global maxAge', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 1000});
 	lru.set('1', 'test', Date.now() + 100);
 	lru.set('2', 'boo');
-	await sleep(200);
+	await sleep(300);
 	t.false(lru.has('1'));
 	await sleep(200);
 	t.true(lru.has('2'));
