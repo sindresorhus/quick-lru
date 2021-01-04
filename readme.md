@@ -71,6 +71,8 @@ The instance is an [`Iterable`](https://developer.mozilla.org/en/docs/Web/JavaSc
 
 Both `key` and `value` can be of any type.
 
+Individual expiration of an item can be specified with the `expiry` parameter. If not specified, `maxAge` value will be used in case that is set up, else the item will not have expiration.
+
 #### .set(key, value, expiry)
 
 Set an item. Returns the instance.
