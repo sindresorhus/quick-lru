@@ -54,7 +54,7 @@ By default maxAge will be 0 which means that items will never expires.
 
 Lazy expiration upon the next `write` or `read` call.
 
-Individual expiration of an item can be specified by the `set(key, value, expiry)` method.
+Individual expiration of an item can be specified by the `set(key, value, maxAge)` method.
 
 #### onEviction
 
@@ -71,11 +71,11 @@ The instance is an [`Iterable`](https://developer.mozilla.org/en/docs/Web/JavaSc
 
 Both `key` and `value` can be of any type.
 
-Individual expiration of an item can be specified with the `expiry` parameter. If not specified, `maxAge` value will be used in case that is set up, else the item will not have expiration.
-
-#### .set(key, value, expiry)
+#### .set(key, value, maxAge)
 
 Set an item. Returns the instance.
+
+Individual expiration of an item can be specified with the `maxAge` parameter. If not specified, the global `maxAge` value will be used in case that is specified on the constructor, else the item will not have expiration.
 
 #### .get(key)
 

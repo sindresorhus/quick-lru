@@ -110,14 +110,14 @@ class QuickLRU {
 		}
 	}
 
-	set(key, value, expiry = this.maxAge > 0 ? Date.now() + this.maxAge : undefined) {
+	set(key, value, maxAge = this.maxAge > 0 ? Date.now() + this.maxAge : undefined) {
 		if (this.cache.has(key)) {
 			this.cache.set(key, {
 				value,
-				expiry
+				maxAge
 			});
 		} else {
-			this._set(key, {value, expiry});
+			this._set(key, {value, expiry: maxAge});
 		}
 	}
 
