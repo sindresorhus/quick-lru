@@ -52,7 +52,7 @@ Type: `number`
 The maximum number of milliseconds an item should remain in cache.
 By default maxAge will be 0, which means that items will never expire.
 
-Lazy expiration upon the next `write` or `read` call.
+Lazy expiration happens upon the next `write` or `read` call.
 
 Individual expiration of an item can be specified by the `set(key, value, maxAge)` method.
 
