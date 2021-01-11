@@ -388,6 +388,13 @@ test('max age - on resize, max aged items should also be evicted', async t => {
 	t.deepEqual(actualValues, expectValues);
 });
 
+test('max age - an item that is not expired can also be peek', async t => {
+	const lru = new QuickLRU({maxSize: 10, maxAge: 400});
+	lru.set('1', 'test');
+	await sleep(200);
+	t.is(lru.peek('1'), 'test');
+});
+
 test('max age - peeking the item should also remove the item if it has expired', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 100});
 	lru.set('1', 'test');
