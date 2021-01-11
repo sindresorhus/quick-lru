@@ -63,7 +63,7 @@ declare class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueTy
 
 	@returns The list instance.
 	*/
-	set(key: KeyType, value: ValueType, magAge?: number): this;
+	set(key: KeyType, value: ValueType, maxAge?: number): this;
 
 	/**
 	Get an item.
