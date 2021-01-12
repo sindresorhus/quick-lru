@@ -218,14 +218,14 @@ test('`onEviction` option method is called after `maxSize` is exceeded', t => {
 
 test('set(expiry) - an individual item could have custom expiration', async t => {
 	const lru = new QuickLRU({maxSize: 10});
-	lru.set('1', 'test', Date.now() + 100);
+	lru.set('1', 'test', {maxAge: Date.now() + 100});
 	await sleep(200);
 	t.false(lru.has('1'));
 });
 
 test('set(expiry) - items without expiration will never expired', async t => {
 	const lru = new QuickLRU({maxSize: 10});
-	lru.set('1', 'test', Date.now() + 100);
+	lru.set('1', 'test', {maxAge: Date.now() + 100});
 	lru.set('2', 'boo');
 	await sleep(200);
 	t.false(lru.has('1'));
@@ -245,7 +245,7 @@ test('set(expiry) - not a number expires should not be take in account', async t
 
 test('set(expiry) - local expires prevails over the global maxAge', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 1000});
-	lru.set('1', 'test', Date.now() + 100);
+	lru.set('1', 'test', {maxAge: Date.now() + 100});
 	lru.set('2', 'boo');
 	await sleep(300);
 	t.false(lru.has('1'));
@@ -253,7 +253,7 @@ test('set(expiry) - local expires prevails over the global maxAge', async t => {
 	t.true(lru.has('2'));
 });
 
-test('max age - should remove the item if has expired on call get() method upon the same key', async t => {
+test('max age - should remove the item if has expired on call `get()` method upon the same key', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 90});
 	lru.set('1', 'test');
 	await sleep(200);
@@ -281,7 +281,7 @@ test('max age - setting the item again should refresh the expiration time', asyn
 test('max age - setting an item with a local expiration date', async t => {
 	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('1', 'test');
-	lru.set('2', 'test2', Date.now() + 500);
+	lru.set('2', 'test2', {maxAge: Date.now() + 500});
 	await sleep(200);
 	t.true(lru.has('2'));
 	await sleep(300);
@@ -487,7 +487,7 @@ test('max age - `.values()` should return the values that are not expired', asyn
 	t.deepEqual([...lru.values()].sort(), ['loco']);
 });
 
-test('max age - `entriesDescending() should not return expired entries', async t => {
+test('max age - `entriesDescending()` should not return expired entries', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 100});
 	lru.set('1', undefined);
 	lru.set('2', 'test2');
@@ -499,7 +499,7 @@ test('max age - `entriesDescending() should not return expired entries', async t
 	t.deepEqual([...lru.entriesDescending()], [['5', 'loco'], ['4', 'coco']]);
 });
 
-test('max age - entriesDescending() should not return expired entries from old cache', async t => {
+test('max age - `entriesDescending()` should not return expired entries from old cache', async t => {
 	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('1', undefined);
 	lru.set('2', 'test2');
@@ -511,7 +511,7 @@ test('max age - entriesDescending() should not return expired entries from old c
 	t.deepEqual([...lru.entriesDescending()], [['5', 'loco'], ['4', 'coco']]);
 });
 
-test('max age - entriesDescending() should return all entries in desc order if are not expired', async t => {
+test('max age - `entriesDescending()` should return all entries in desc order if are not expired', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 5000});
 	lru.set('1', undefined);
 	lru.set('2', 'test2');
@@ -523,7 +523,7 @@ test('max age - entriesDescending() should return all entries in desc order if a
 	t.deepEqual([...lru.entriesDescending()], [['5', 'loco'], ['4', 'coco'], ['3', 'test3'], ['2', 'test2'], ['1', undefined]]);
 });
 
-test('max age - entriesAscending() should not return expired entries', async t => {
+test('max age - `entriesAscending()` should not return expired entries', async t => {
 	const lru = new QuickLRU({maxSize: 5, maxAge: 100});
 	lru.set('1', undefined);
 	lru.set('2', 'test2');
@@ -535,7 +535,7 @@ test('max age - entriesAscending() should not return expired entries', async t =
 	t.deepEqual([...lru.entriesAscending()], [['4', 'coco'], ['5', 'loco']]);
 });
 
-test('max age - entriesAscending() should not return expired entries even if are not recent', async t => {
+test('max age - `entriesAscending() should not return expired entries even if are not recent', async t => {
 	const lru = new QuickLRU({maxSize: 3, maxAge: 100});
 	lru.set('1', undefined);
 	lru.set('2', 'test2');
@@ -547,7 +547,7 @@ test('max age - entriesAscending() should not return expired entries even if are
 	t.deepEqual([...lru.entriesAscending()], [['4', 'coco'], ['5', 'loco']]);
 });
 
-test('max age - entriesAscending() should return the entries that are not expired', async t => {
+test('max age - `entriesAscending()` should return the entries that are not expired', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 100});
 	lru.set('1', undefined);
 	lru.set('2', 'test2');
@@ -559,7 +559,7 @@ test('max age - entriesAscending() should return the entries that are not expire
 	t.deepEqual([...lru.entriesAscending()], [['3', 'test3'], ['4', 'coco'], ['5', 'loco']]);
 });
 
-test('max age - .[Symbol.iterator]() should not return expired items', async t => {
+test('max age - `.[Symbol.iterator]()` should not return expired items', async t => {
 	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('key', 'value');
 	lru.set('key3', 1);
@@ -569,7 +569,7 @@ test('max age - .[Symbol.iterator]() should not return expired items', async t =
 	t.deepEqual([...lru].sort(), [['key4', 2]]);
 });
 
-test('max age - .[Symbol.iterator]() should not return expired items that are old', async t => {
+test('max age - `.[Symbol.iterator]()` should not return expired items that are old', async t => {
 	const lru = new QuickLRU({maxSize: 1, maxAge: 100});
 	lru.set('keyunique', 'value');
 	lru.set('key3unique', 1);

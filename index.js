@@ -11,7 +11,7 @@ class QuickLRU {
 		}
 
 		this.maxSize = options.maxSize;
-		this.maxAge = options.maxAge || 0;
+		this.maxAge = options.maxAge || Infinity;
 		this.onEviction = options.onEviction;
 		this.cache = new Map();
 		this.oldCache = new Map();
@@ -110,7 +110,7 @@ class QuickLRU {
 		}
 	}
 
-	set(key, value, maxAge = this.maxAge > 0 ? Date.now() + this.maxAge : undefined) {
+	set(key, value, {maxAge = this.maxAge === Infinity ? undefined : Date.now() + this.maxAge} = {}) {
 		if (this.cache.has(key)) {
 			this.cache.set(key, {
 				value,

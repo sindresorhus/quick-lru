@@ -48,13 +48,14 @@ The maximum number of items before evicting the least recently used items.
 #### maxAge
 
 Type: `number`
+Default: `Infinity`
 
 The maximum number of milliseconds an item should remain in cache.
-By default maxAge will be 0, which means that items will never expire.
+By default maxAge will be Infinity, which means that items will never expire.
 
 Lazy expiration happens upon the next `write` or `read` call.
 
-Individual expiration of an item can be specified by the `set(key, value, maxAge)` method.
+Individual expiration of an item can be specified by the `set(key, value, options)` method.
 
 #### onEviction
 
@@ -71,7 +72,7 @@ The instance is an [`Iterable`](https://developer.mozilla.org/en/docs/Web/JavaSc
 
 Both `key` and `value` can be of any type.
 
-#### .set(key, value, maxAge)
+#### .set(key, value, options?)
 
 Set an item. Returns the instance.
 

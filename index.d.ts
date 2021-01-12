@@ -3,9 +3,9 @@ declare namespace QuickLRU {
 		/**
 		The maximum number of milliseconds an item should remain in cache.
 
-@default 0
-		By default maxAge will be 0 which means that items will never expires.
-		Lazy expiration upon the next `write` or `read` call.
+		@default Infinity
+		By default, `maxAge` will be `Infinity` which means that items will never expires.
+		Lazy expiration upon the next write or read call.
 
 		Individual expiration of an item can be specified by the `set(key, value, maxAge)` method.
 		*/
@@ -56,15 +56,13 @@ declare class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueTy
 	[Symbol.iterator](): IterableIterator<[KeyType, ValueType]>;
 
 	/**
-	Set an item.
+	Set an item. Returns the instance.
 
-	Individual expiration of an item can be specified with the `maxAge` parameter.
-	If not specified, the global `maxAge` value will be used in case that is specified on the constructor,
-	else the item will not have expiration.
+	Individual expiration of an item can be specified with the `maxAge` parameter. If not specified, the global `maxAge` value will be used in case it is specified on the constructor, otherwise the item will never expire.
 
 	@returns The list instance.
 	*/
-	set(key: KeyType, value: ValueType, maxAge?: number): this;
+	set(key: KeyType, value: ValueType, options?: { maxAge?: number }): this;
 
 	/**
 	Get an item.
