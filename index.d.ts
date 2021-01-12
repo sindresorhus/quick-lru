@@ -4,6 +4,7 @@ declare namespace QuickLRU {
 		The maximum number of milliseconds an item should remain in cache.
 
 		@default Infinity
+
 		By default, `maxAge` will be `Infinity`, which means that items will never expire.
 		Lazy expiration upon the next write or read call.
 
