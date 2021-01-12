@@ -47,7 +47,7 @@ The maximum number of items before evicting the least recently used items.
 
 #### maxAge
 
-Type: `number`
+Type: `number`\
 Default: `Infinity`
 
 The maximum number of milliseconds an item should remain in cache.
