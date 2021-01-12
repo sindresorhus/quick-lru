@@ -288,6 +288,14 @@ test('max age - setting an item with a local expiration date', async t => {
 	t.false(lru.has('2'));
 });
 
+test('max age - setting an item with a empty object as options parameter must use the global maxAge', async t => {
+	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
+	lru.set('1', 'test');
+	lru.set('2', 'test2', {});
+	await sleep(200);
+	t.false(lru.has('2'));
+});
+
 test('max age - once an item expires, the eviction function should be called', async t => {
 	t.timeout(1000);
 	const expectKey = '1';
