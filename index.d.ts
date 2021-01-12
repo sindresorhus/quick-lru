@@ -1,7 +1,7 @@
 declare namespace QuickLRU {
 	interface Options<KeyType, ValueType> {
 		/**
-		The maximum number of milliseconds an item should remain in cache.
+		The maximum number of milliseconds an item should remain in the cache.
 
 		@default Infinity
 
