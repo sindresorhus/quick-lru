@@ -76,7 +76,7 @@ Both `key` and `value` can be of any type.
 
 Set an item. Returns the instance.
 
-Individual expiration of an item can be specified with the `maxAge` parameter. If not specified, the global `maxAge` value will be used in case it is specified on the constructor, otherwise the item will never expire.
+Individual expiration of an item can be specified with the `maxAge` option. If not specified, the global `maxAge` value will be used in case it is specified on the constructor, otherwise the item will never expire.
 
 #### .get(key)
 
