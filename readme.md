@@ -15,7 +15,7 @@ $ npm install quick-lru
 ## Usage
 
 ```js
-const QuickLRU = require('quick-lru');
+import QuickLRU from 'quick-lru';
 
 const lru = new QuickLRU({maxSize: 1000});
 

@@ -1,5 +1,5 @@
 import {expectType} from 'tsd';
-import QuickLRU = require('.');
+import QuickLRU from './index.js';
 
 const lru = new QuickLRU<string, number>({maxSize: 1000, maxAge: 200});
 
@@ -8,7 +8,6 @@ expectType<number | undefined>(lru.get('🦄'));
 expectType<boolean>(lru.has('🦄'));
 expectType<number | undefined>(lru.peek('🦄'));
 expectType<boolean>(lru.delete('🦄'));
-expectType<void>(lru.clear());
 expectType<number>(lru.size);
 
 for (const [key, value] of lru) {
