@@ -1,4 +1,4 @@
-# quick-lru [![Coverage Status](https://coveralls.io/repos/github/sindresorhus/quick-lru/badge.svg?branch=master)](https://coveralls.io/github/sindresorhus/quick-lru?branch=master)
+# quick-lru [![Coverage Status](https://codecov.io/gh/sindresorhus/quick-lru/branch/master/graph/badge.svg)](https://codecov.io/gh/sindresorhus/quick-lru/branch/master)
 
 > Simple [“Least Recently Used” (LRU) cache](https://en.m.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29)
 
@@ -45,6 +45,18 @@ Type: `number`
 
 The maximum number of items before evicting the least recently used items.
 
+#### maxAge
+
+Type: `number`\
+Default: `Infinity`
+
+The maximum number of milliseconds an item should remain in cache.
+By default maxAge will be Infinity, which means that items will never expire.
+
+Lazy expiration happens upon the next `write` or `read` call.
+
+Individual expiration of an item can be specified by the `set(key, value, options)` method.
+
 #### onEviction
 
 *Optional*\
@@ -60,9 +72,11 @@ The instance is an [`Iterable`](https://developer.mozilla.org/en/docs/Web/JavaSc
 
 Both `key` and `value` can be of any type.
 
-#### .set(key, value)
+#### .set(key, value, options?)
 
 Set an item. Returns the instance.
+
+Individual expiration of an item can be specified with the `maxAge` option. If not specified, the global `maxAge` value will be used in case it is specified on the constructor, otherwise the item will never expire.
 
 #### .get(key)
 
@@ -86,6 +100,12 @@ Returns `true` if the item is removed or `false` if the item doesn't exist.
 
 Delete all items.
 
+#### .resize(maxSize)
+
+Update the `maxSize`, discarding items as necessary. Insertion order is mostly preserved, though this is not a strong guarantee.
+
+Useful for on-the-fly tuning of cache sizes in live systems.
+
 #### .keys()
 
 Iterable for all the keys.
@@ -93,6 +113,14 @@ Iterable for all the keys.
 #### .values()
 
 Iterable for all the values.
+
+#### .entriesAscending()
+
+Iterable for all entries, starting with the oldest (ascending in recency).
+
+#### .entriesDescending()
+
+Iterable for all entries, starting with the newest (descending in recency).
 
 #### .size
 

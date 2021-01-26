@@ -1,6 +1,18 @@
 declare namespace QuickLRU {
 	interface Options<KeyType, ValueType> {
 		/**
+		The maximum number of milliseconds an item should remain in the cache.
+
+		@default Infinity
+
+		By default, `maxAge` will be `Infinity`, which means that items will never expire.
+		Lazy expiration upon the next write or read call.
+
+		Individual expiration of an item can be specified by the `set(key, value, maxAge)` method.
+		*/
+		readonly maxAge?: number;
+
+		/**
 		The maximum number of items before evicting the least recently used items.
 		*/
 		readonly maxSize: number;
@@ -14,8 +26,7 @@ declare namespace QuickLRU {
 	}
 }
 
-declare class QuickLRU<KeyType, ValueType>
-	implements Iterable<[KeyType, ValueType]> {
+declare class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueType]> {
 	/**
 	The stored item count.
 	*/
@@ -46,11 +57,13 @@ declare class QuickLRU<KeyType, ValueType>
 	[Symbol.iterator](): IterableIterator<[KeyType, ValueType]>;
 
 	/**
-	Set an item.
+	Set an item. Returns the instance.
+
+	Individual expiration of an item can be specified with the `maxAge` option. If not specified, the global `maxAge` value will be used in case it is specified in the constructor, otherwise the item will never expire.
 
 	@returns The list instance.
 	*/
-	set(key: KeyType, value: ValueType): this;
+	set(key: KeyType, value: ValueType, options?: {maxAge?: number}): this;
 
 	/**
 	Get an item.
@@ -84,6 +97,13 @@ declare class QuickLRU<KeyType, ValueType>
 	clear(): void;
 
 	/**
+	Update the `maxSize` in-place, discarding items as necessary. Insertion order is mostly preserved, though this is not a strong guarantee.
+
+	Useful for on-the-fly tuning of cache sizes in live systems.
+	*/
+	resize(maxSize: number): void;
+
+	/**
 	Iterable for all the keys.
 	*/
 	keys(): IterableIterator<KeyType>;
@@ -92,6 +112,16 @@ declare class QuickLRU<KeyType, ValueType>
 	Iterable for all the values.
 	*/
 	values(): IterableIterator<ValueType>;
+
+	/**
+	Iterable for all entries, starting with the oldest (ascending in recency).
+	*/
+	entriesAscending(): IterableIterator<[KeyType, ValueType]>;
+
+	/**
+	Iterable for all entries, starting with the newest (descending in recency).
+	*/
+	entriesDescending(): IterableIterator<[KeyType, ValueType]>;
 }
 
 export = QuickLRU;
