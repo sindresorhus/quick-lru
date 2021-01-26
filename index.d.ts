@@ -39,7 +39,7 @@ declare class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueTy
 
 	@example
 	```
-	import QuickLRU = require('quick-lru');
+	import QuickLRU = require('quick-lru-cjs');
 
 	const lru = new QuickLRU({maxSize: 1000});
 

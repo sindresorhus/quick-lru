@@ -1,9 +1,9 @@
 {
-	"name": "quick-lru",
-	"version": "5.1.1",
-	"description": "Simple “Least Recently Used” (LRU) cache",
+	"name": "quick-lru-cjs",
+	"version": "1.0.0",
+	"description": "Simple “Least Recently Used” (LRU) cache. A fork of quick-lru for commonjs",
 	"license": "MIT",
-	"repository": "sindresorhus/quick-lru",
+	"repository": "javi11/quick-lru-cjs",
 	"funding": "https://github.com/sponsors/sindresorhus",
 	"author": {
 		"name": "Sindre Sorhus",

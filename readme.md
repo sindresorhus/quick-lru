@@ -1,5 +1,3 @@
-# quick-lru [![Coverage Status](https://codecov.io/gh/sindresorhus/quick-lru/branch/master/graph/badge.svg)](https://codecov.io/gh/sindresorhus/quick-lru/branch/master)
-
 > Simple [“Least Recently Used” (LRU) cache](https://en.m.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29)
 
 Useful when you need to cache something and limit memory usage.
@@ -9,13 +7,13 @@ Inspired by the [`hashlru` algorithm](https://github.com/dominictarr/hashlru#alg
 ## Install
 
 ```
-$ npm install quick-lru
+$ npm install quick-lru-cjs
 ```
 
 ## Usage
 
 ```js
-const QuickLRU = require('quick-lru');
+const QuickLRU = require('quick-lru-cjs');
 
 const lru = new QuickLRU({maxSize: 1000});
 
@@ -131,13 +129,3 @@ The stored item count.
 - [yocto-queue](https://github.com/sindresorhus/yocto-queue) - Tiny queue data structure
 
 ---
-
-<div align="center">
-	<b>
-		<a href="https://tidelift.com/subscription/pkg/npm-quick-lru?utm_source=npm-quick-lru&utm_medium=referral&utm_campaign=readme">Get professional support for this package with a Tidelift subscription</a>
-	</b>
-	<br>
-	<sub>
-		Tidelift helps make open source sustainable for maintainers while giving companies<br>assurances about security, maintenance, and licensing for their dependencies.
-	</sub>
-</div>
