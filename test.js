@@ -664,3 +664,15 @@ test('resize checks parameter bounds', t => {
 		lru.resize(-1);
 	}, {message: /maxSize/});
 });
+
+test('function value', t => {
+	const lru = new QuickLRU({maxSize: 1});
+	let isCalled = false;
+
+	lru.set('fn', () => {
+		isCalled = true;
+	});
+
+	lru.get('fn')();
+	t.true(isCalled);
+});
