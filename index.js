@@ -114,7 +114,7 @@ class QuickLRU {
 		if (this.cache.has(key)) {
 			this.cache.set(key, {
 				value,
-				maxAge
+				expiry: maxAge
 			});
 		} else {
 			this._set(key, {value, expiry: maxAge});

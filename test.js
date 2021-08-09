@@ -253,6 +253,15 @@ test('set(expiry) - local expires prevails over the global maxAge', async t => {
 	t.true(lru.has('2'));
 });
 
+test('set(expiry) - set the same item should update the expiration time', async t => {
+	const lru = new QuickLRU({maxSize: 10, maxAge: 150});
+	lru.set('1', 'test');
+	await sleep(100);
+	lru.set('1', 'test');
+	await sleep(100);
+	t.true(lru.has('1'));
+});
+
 test('max age - should remove the item if has expired on call `get()` method upon the same key', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 90});
 	lru.set('1', 'test');
