@@ -1,6 +1,6 @@
 {
 	"name": "quick-lru-cjs",
-	"version": "5.2.0",
+	"version": "5.2.1",
 	"description": "Simple “Least Recently Used” (LRU) cache. A fork of quick-lru for commonjs",
 	"license": "MIT",
 	"repository": "javi11/quick-lru-cjs",
