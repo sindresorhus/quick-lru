@@ -153,12 +153,19 @@ test('.[Symbol.iterator]()', t => {
 	lru.set('1', 1);
 	lru.set('2', 2);
 	lru.set('3', 3);
-	t.deepEqual([...lru].sort(), [['1', 1], ['2', 2], ['3', 3]]);
+	t.deepEqual([...lru].sort(), [
+		['1', 1],
+		['2', 2],
+		['3', 3]
+	]);
 });
 
 test('.[Symbol.iterator]() - accounts for duplicates', t => {
 	const lru = lruWithDuplicates();
-	t.deepEqual([...lru].sort(), [['key', 'value'], ['keyDupe', 2]]);
+	t.deepEqual([...lru].sort(), [
+		['key', 'value'],
+		['keyDupe', 2]
+	]);
 });
 
 test('.size', t => {
@@ -218,14 +225,14 @@ test('`onEviction` option method is called after `maxSize` is exceeded', t => {
 
 test('set(expiry) - an individual item could have custom expiration', async t => {
 	const lru = new QuickLRU({maxSize: 10});
-	lru.set('1', 'test', {maxAge: Date.now() + 100});
+	lru.set('1', 'test', {maxAge: 100});
 	await sleep(200);
 	t.false(lru.has('1'));
 });
 
 test('set(expiry) - items without expiration will never expired', async t => {
 	const lru = new QuickLRU({maxSize: 10});
-	lru.set('1', 'test', {maxAge: Date.now() + 100});
+	lru.set('1', 'test', {maxAge: 100});
 	lru.set('2', 'boo');
 	await sleep(200);
 	t.false(lru.has('1'));
@@ -245,7 +252,7 @@ test('set(expiry) - not a number expires should not be take in account', async t
 
 test('set(expiry) - local expires prevails over the global maxAge', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 1000});
-	lru.set('1', 'test', {maxAge: Date.now() + 100});
+	lru.set('1', 'test', {maxAge: 100});
 	lru.set('2', 'boo');
 	await sleep(300);
 	t.false(lru.has('1'));
@@ -290,7 +297,7 @@ test('max age - setting the item again should refresh the expiration time', asyn
 test('max age - setting an item with a local expiration date', async t => {
 	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('1', 'test');
-	lru.set('2', 'test2', {maxAge: Date.now() + 500});
+	lru.set('2', 'test2', {maxAge: 500});
 	await sleep(200);
 	t.true(lru.has('2'));
 	await sleep(300);
@@ -513,7 +520,13 @@ test('max age - `entriesDescending()` should not return expired entries', async 
 	lru.set('4', 'coco');
 	lru.set('5', 'loco');
 
-	t.deepEqual([...lru.entriesDescending()], [['5', 'loco'], ['4', 'coco']]);
+	t.deepEqual(
+		[...lru.entriesDescending()],
+		[
+			['5', 'loco'],
+			['4', 'coco']
+		]
+	);
 });
 
 test('max age - `entriesDescending()` should not return expired entries from old cache', async t => {
@@ -525,7 +538,13 @@ test('max age - `entriesDescending()` should not return expired entries from old
 	lru.set('4', 'coco');
 	lru.set('5', 'loco');
 
-	t.deepEqual([...lru.entriesDescending()], [['5', 'loco'], ['4', 'coco']]);
+	t.deepEqual(
+		[...lru.entriesDescending()],
+		[
+			['5', 'loco'],
+			['4', 'coco']
+		]
+	);
 });
 
 test('max age - `entriesDescending()` should return all entries in desc order if are not expired', async t => {
@@ -537,7 +556,16 @@ test('max age - `entriesDescending()` should return all entries in desc order if
 	lru.set('4', 'coco');
 	lru.set('5', 'loco');
 
-	t.deepEqual([...lru.entriesDescending()], [['5', 'loco'], ['4', 'coco'], ['3', 'test3'], ['2', 'test2'], ['1', undefined]]);
+	t.deepEqual(
+		[...lru.entriesDescending()],
+		[
+			['5', 'loco'],
+			['4', 'coco'],
+			['3', 'test3'],
+			['2', 'test2'],
+			['1', undefined]
+		]
+	);
 });
 
 test('max age - `entriesAscending()` should not return expired entries', async t => {
@@ -549,7 +577,13 @@ test('max age - `entriesAscending()` should not return expired entries', async t
 	lru.set('4', 'coco');
 	lru.set('5', 'loco');
 
-	t.deepEqual([...lru.entriesAscending()], [['4', 'coco'], ['5', 'loco']]);
+	t.deepEqual(
+		[...lru.entriesAscending()],
+		[
+			['4', 'coco'],
+			['5', 'loco']
+		]
+	);
 });
 
 test('max age - `entriesAscending() should not return expired entries even if are not recent', async t => {
@@ -561,7 +595,13 @@ test('max age - `entriesAscending() should not return expired entries even if ar
 	lru.set('4', 'coco');
 	lru.set('5', 'loco');
 
-	t.deepEqual([...lru.entriesAscending()], [['4', 'coco'], ['5', 'loco']]);
+	t.deepEqual(
+		[...lru.entriesAscending()],
+		[
+			['4', 'coco'],
+			['5', 'loco']
+		]
+	);
 });
 
 test('max age - `entriesAscending()` should return the entries that are not expired', async t => {
@@ -573,7 +613,14 @@ test('max age - `entriesAscending()` should return the entries that are not expi
 	lru.set('4', 'coco');
 	lru.set('5', 'loco');
 
-	t.deepEqual([...lru.entriesAscending()], [['3', 'test3'], ['4', 'coco'], ['5', 'loco']]);
+	t.deepEqual(
+		[...lru.entriesAscending()],
+		[
+			['3', 'test3'],
+			['4', 'coco'],
+			['5', 'loco']
+		]
+	);
 });
 
 test('max age - `.[Symbol.iterator]()` should not return expired items', async t => {
@@ -603,7 +650,14 @@ test('entriesAscending enumerates cache items oldest-first', t => {
 	lru.set('3', 3);
 	lru.set('3', 7);
 	lru.set('2', 8);
-	t.deepEqual([...lru.entriesAscending()], [['1', 1], ['3', 7], ['2', 8]]);
+	t.deepEqual(
+		[...lru.entriesAscending()],
+		[
+			['1', 1],
+			['3', 7],
+			['2', 8]
+		]
+	);
 });
 
 test('entriesDescending enumerates cache items newest-first', t => {
@@ -613,7 +667,15 @@ test('entriesDescending enumerates cache items newest-first', t => {
 	lru.set('a', 8);
 	lru.set('t', 4);
 	lru.set('v', 3);
-	t.deepEqual([...lru.entriesDescending()], [['v', 3], ['t', 4], ['a', 8], ['q', 2]]);
+	t.deepEqual(
+		[...lru.entriesDescending()],
+		[
+			['v', 3],
+			['t', 4],
+			['a', 8],
+			['q', 2]
+		]
+	);
 });
 
 test('resize removes older items', t => {
@@ -652,7 +714,16 @@ test('resize increases capacity', t => {
 	lru.set('3', 3);
 	lru.set('4', 4);
 	lru.set('5', 5);
-	t.deepEqual([...lru.entriesAscending()], [['1', 1], ['2', 2], ['3', 3], ['4', 4], ['5', 5]]);
+	t.deepEqual(
+		[...lru.entriesAscending()],
+		[
+			['1', 1],
+			['2', 2],
+			['3', 3],
+			['4', 4],
+			['5', 5]
+		]
+	);
 });
 
 test('resize does not conflict with the same number of items', t => {
@@ -663,7 +734,16 @@ test('resize does not conflict with the same number of items', t => {
 	lru.resize(3);
 	lru.set('4', 4);
 	lru.set('5', 5);
-	t.deepEqual([...lru.entriesAscending()], [['1', 1], ['2', 2], ['3', 3], ['4', 4], ['5', 5]]);
+	t.deepEqual(
+		[...lru.entriesAscending()],
+		[
+			['1', 1],
+			['2', 2],
+			['3', 3],
+			['4', 4],
+			['5', 5]
+		]
+	);
 });
 
 test('resize checks parameter bounds', t => {

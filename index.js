@@ -110,14 +110,18 @@ class QuickLRU {
 		}
 	}
 
-	set(key, value, {maxAge = this.maxAge === Infinity ? undefined : Date.now() + this.maxAge} = {}) {
+	set(key, value, {maxAge = this.maxAge} = {}) {
+		const expiry =
+			typeof maxAge === 'number' && maxAge !== Infinity ?
+				Date.now() + maxAge :
+				undefined;
 		if (this.cache.has(key)) {
 			this.cache.set(key, {
 				value,
-				expiry: maxAge
+				expiry
 			});
 		} else {
-			this._set(key, {value, expiry: maxAge});
+			this._set(key, {value, expiry});
 		}
 	}
 
