@@ -9,7 +9,7 @@ Inspired by the [`hashlru` algorithm](https://github.com/dominictarr/hashlru#alg
 ## Install
 
 ```
-$ npm install quick-lru-cjs
+$ npm install quick-lru
 ```
 
 ## Usage
@@ -131,3 +131,13 @@ The stored item count.
 - [yocto-queue](https://github.com/sindresorhus/yocto-queue) - Tiny queue data structure
 
 ---
+
+<div align="center">
+	<b>
+		<a href="https://tidelift.com/subscription/pkg/npm-quick-lru?utm_source=npm-quick-lru&utm_medium=referral&utm_campaign=readme">Get professional support for this package with a Tidelift subscription</a>
+	</b>
+	<br>
+	<sub>
+		Tidelift helps make open source sustainable for maintainers while giving companies<br>assurances about security, maintenance, and licensing for their dependencies.
+	</sub>
+</div>

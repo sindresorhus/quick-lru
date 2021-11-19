@@ -3,7 +3,7 @@
 	"version": "6.0.1",
 	"description": "Simple “Least Recently Used” (LRU) cache",
 	"license": "MIT",
-	"repository": "javi11/quick-lru-cjs",
+	"repository": "sindresorhus/quick-lru",
 	"funding": "https://github.com/sponsors/sindresorhus",
 	"author": {
 		"name": "Sindre Sorhus",
@@ -17,7 +17,8 @@
 	},
 	"scripts": {
 		"//test": "xo && nyc ava && tsd",
-		"test": "xo && ava && tsd"
+		"test": "xo && ava && tsd",
+		"lint": "xo --fix"
 	},
 	"files": [
 		"index.js",

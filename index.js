@@ -240,18 +240,6 @@ export default class QuickLRU {
 				}
 			}
 		}
-
-		items = [...this.oldCache];
-		for (let i = items.length - 1; i >= 0; --i) {
-			const item = items[i];
-			const [key, value] = item;
-			if (!this.cache.has(key)) {
-				const deleted = this._deleteIfExpired(key, value);
-				if (deleted === false) {
-					yield [key, value.value];
-				}
-			}
-		}
 	}
 
 	* entriesAscending() {
