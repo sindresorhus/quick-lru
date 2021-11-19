@@ -1,3 +1,5 @@
+# quick-lru [![Coverage Status](https://codecov.io/gh/sindresorhus/quick-lru/branch/main/graph/badge.svg)](https://codecov.io/gh/sindresorhus/quick-lru/branch/main)
+
 > Simple [“Least Recently Used” (LRU) cache](https://en.m.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29)
 
 Useful when you need to cache something and limit memory usage.
@@ -13,16 +15,16 @@ $ npm install quick-lru-cjs
 ## Usage
 
 ```js
-const QuickLRU = require('quick-lru-cjs');
+import QuickLRU from "quick-lru";
 
-const lru = new QuickLRU({maxSize: 1000});
+const lru = new QuickLRU({ maxSize: 1000 });
 
-lru.set('🦄', '🌈');
+lru.set("🦄", "🌈");
 
-lru.has('🦄');
+lru.has("🦄");
 //=> true
 
-lru.get('🦄');
+lru.get("🦄");
 //=> '🌈'
 ```
 
@@ -38,7 +40,7 @@ Type: `object`
 
 #### maxSize
 
-*Required*\
+_Required_\
 Type: `number`
 
 The maximum number of items before evicting the least recently used items.
@@ -57,7 +59,7 @@ Individual expiration of an item can be specified by the `set(key, value, option
 
 #### onEviction
 
-*Optional*\
+_Optional_\
 Type: `(key, value) => void`
 
 Called right before an item is evicted from the cache.

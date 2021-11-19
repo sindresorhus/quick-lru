@@ -1,32 +1,30 @@
-declare namespace QuickLRU {
-	interface Options<KeyType, ValueType> {
-		/**
-		The maximum number of milliseconds an item should remain in the cache.
+export interface Options<KeyType, ValueType> {
+	/**
+	The maximum number of milliseconds an item should remain in the cache.
 
-		@default Infinity
+	@default Infinity
 
-		By default, `maxAge` will be `Infinity`, which means that items will never expire.
-		Lazy expiration upon the next write or read call.
+	By default, `maxAge` will be `Infinity`, which means that items will never expire.
+	Lazy expiration upon the next write or read call.
 
-		Individual expiration of an item can be specified by the `set(key, value, maxAge)` method.
-		*/
-		readonly maxAge?: number;
+	Individual expiration of an item can be specified by the `set(key, value, maxAge)` method.
+	*/
+	readonly maxAge?: number;
 
-		/**
-		The maximum number of items before evicting the least recently used items.
-		*/
-		readonly maxSize: number;
+	/**
+	The maximum number of items before evicting the least recently used items.
+	*/
+	readonly maxSize: number;
 
-		/**
-		Called right before an item is evicted from the cache.
+	/**
+	Called right before an item is evicted from the cache.
 
-		Useful for side effects or for items like object URLs that need explicit cleanup (`revokeObjectURL`).
-		*/
-		onEviction?: (key: KeyType, value: ValueType) => void;
-	}
+	Useful for side effects or for items like object URLs that need explicit cleanup (`revokeObjectURL`).
+	*/
+	onEviction?: (key: KeyType, value: ValueType) => void;
 }
 
-declare class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueType]> {
+export default class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueType]> {
 	/**
 	The stored item count.
 	*/
@@ -39,7 +37,7 @@ declare class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueTy
 
 	@example
 	```
-	import QuickLRU = require('quick-lru-cjs');
+	import QuickLRU from 'quick-lru';
 
 	const lru = new QuickLRU({maxSize: 1000});
 
@@ -52,7 +50,7 @@ declare class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueTy
 	//=> '🌈'
 	```
 	*/
-	constructor(options: QuickLRU.Options<KeyType, ValueType>);
+	constructor(options: Options<KeyType, ValueType>);
 
 	[Symbol.iterator](): IterableIterator<[KeyType, ValueType]>;
 
@@ -123,5 +121,3 @@ declare class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueTy
 	*/
 	entriesDescending(): IterableIterator<[KeyType, ValueType]>;
 }
-
-export = QuickLRU;

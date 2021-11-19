@@ -12,7 +12,6 @@ jobs:
         node-version:
           - 14
           - 12
-          - 10
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -20,7 +19,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm test
-      - uses: codecov/codecov-action@v1
-        if: matrix.node-version == 14
-        with:
-          fail_ci_if_error: true
+      # TODO: Disabled until `nyc` supports ESM.
+      # - uses: codecov/codecov-action@v1
+      #   if: matrix.node-version == 14
+      #   with:
+      #     fail_ci_if_error: true

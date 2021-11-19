@@ -1,6 +1,4 @@
-'use strict';
-
-class QuickLRU {
+export default class QuickLRU {
 	constructor(options = {}) {
 		if (!(options.maxSize && options.maxSize > 0)) {
 			throw new TypeError('`maxSize` must be a number greater than 0');
@@ -10,14 +8,16 @@ class QuickLRU {
 			throw new TypeError('`maxAge` must be a number greater than 0');
 		}
 
+		// TODO: Use private class fields when ESLint supports them.
 		this.maxSize = options.maxSize;
-		this.maxAge = options.maxAge || Infinity;
+		this.maxAge = options.maxAge || Number.POSITIVE_INFINITY;
 		this.onEviction = options.onEviction;
 		this.cache = new Map();
 		this.oldCache = new Map();
 		this._size = 0;
 	}
 
+	// TODO: Use private class methods when targeting Node.js 16.
 	_emitEvictions(cache) {
 		if (typeof this.onEviction !== 'function') {
 			return;
@@ -112,7 +112,7 @@ class QuickLRU {
 
 	set(key, value, {maxAge = this.maxAge} = {}) {
 		const expiry =
-			typeof maxAge === 'number' && maxAge !== Infinity ?
+			typeof maxAge === 'number' && maxAge !== Number.POSITIVE_INFINITY ?
 				Date.now() + maxAge :
 				undefined;
 		if (this.cache.has(key)) {
@@ -240,6 +240,18 @@ class QuickLRU {
 				}
 			}
 		}
+
+		items = [...this.oldCache];
+		for (let i = items.length - 1; i >= 0; --i) {
+			const item = items[i];
+			const [key, value] = item;
+			if (!this.cache.has(key)) {
+				const deleted = this._deleteIfExpired(key, value);
+				if (deleted === false) {
+					yield [key, value.value];
+				}
+			}
+		}
 	}
 
 	* entriesAscending() {
@@ -263,5 +275,3 @@ class QuickLRU {
 		return Math.min(this._size + oldCacheSize, this.maxSize);
 	}
 }
-
-module.exports = QuickLRU;
