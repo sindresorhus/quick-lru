@@ -219,14 +219,14 @@ test('`onEviction` option method is called after `maxSize` is exceeded', t => {
 
 test('set(expiry) - an individual item could have custom expiration', async t => {
 	const lru = new QuickLRU({maxSize: 10});
-	lru.set('1', 'test', {maxAge: Date.now() + 100});
+	lru.set('1', 'test', {maxAge: 100});
 	await delay(200);
 	t.false(lru.has('1'));
 });
 
 test('set(expiry) - items without expiration will never expired', async t => {
 	const lru = new QuickLRU({maxSize: 10});
-	lru.set('1', 'test', {maxAge: Date.now() + 100});
+	lru.set('1', 'test', {maxAge: 100});
 	lru.set('2', 'boo');
 	await delay(200);
 	t.false(lru.has('1'));
@@ -246,7 +246,7 @@ test('set(expiry) - not a number expires should not be take in account', async t
 
 test('set(expiry) - local expires prevails over the global maxAge', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 1000});
-	lru.set('1', 'test', {maxAge: Date.now() + 100});
+	lru.set('1', 'test', {maxAge: 100});
 	lru.set('2', 'boo');
 	await delay(300);
 	t.false(lru.has('1'));
@@ -291,7 +291,7 @@ test('max age - setting the item again should refresh the expiration time', asyn
 test('max age - setting an item with a local expiration date', async t => {
 	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('1', 'test');
-	lru.set('2', 'test2', {maxAge: Date.now() + 500});
+	lru.set('2', 'test2', {maxAge: 500});
 	await delay(200);
 	t.true(lru.has('2'));
 	await delay(300);
