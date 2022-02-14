@@ -1,5 +1,6 @@
-export default class QuickLRU {
+export default class QuickLRU extends Map {
 	constructor(options = {}) {
+		super();
 		if (!(options.maxSize && options.maxSize > 0)) {
 			throw new TypeError('`maxSize` must be a number greater than 0');
 		}
@@ -261,5 +262,21 @@ export default class QuickLRU {
 		}
 
 		return Math.min(this._size + oldCacheSize, this.maxSize);
+	}
+
+	* entries() {
+		for (const [key, value] of this._entriesAscending()) {
+			yield [key, value.value];
+		}
+	}
+
+	forEach(fn, thisArg = this) {
+		for (const [key, value] of this._entriesAscending()) {
+			fn.call(thisArg, value.value, key, this);
+		}
+	}
+
+	[Symbol.toStringTag]() {
+		return JSON.stringify([...this.cache, ...this.oldCache]);
 	}
 }

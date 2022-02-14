@@ -122,6 +122,14 @@ Iterable for all entries, starting with the oldest (ascending in recency).
 
 Iterable for all entries, starting with the newest (descending in recency).
 
+#### .entries()
+
+Iterable for all entries, starting with the newest (ascending in recency). We encourage not to use this method unless you need Map compatibility. Use [.entriesAscending()](#.entriesAscending()) instead.
+
+#### .forEach(callbackFn, thisArgs)
+
+Loop over entries calling the callbackFn for each entry (ascending in recency). We encourage not to use this method unless you need Map compatibility. Use [.entriesAscending()](#.entriesAscending()) instead.
+
 #### .size
 
 The stored item count.
