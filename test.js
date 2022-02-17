@@ -801,7 +801,7 @@ test('function value', t => {
 	t.true(isCalled);
 });
 
-test('toString convert the cache items to string in ascending order', t => {
+test('`.toString()` converts the cache items to a string in ascending order', t => {
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
 	lru.set('2', 2);
