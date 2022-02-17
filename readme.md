@@ -32,7 +32,9 @@ lru.get('🦄');
 
 ### new QuickLRU(options?)
 
-Returns a new instance extending from [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
+Returns a new instance.
+
+It's a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) subclass.
 
 ### options
 
