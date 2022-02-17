@@ -264,10 +264,8 @@ export default class QuickLRU extends Map {
 		return Math.min(this._size + oldCacheSize, this.maxSize);
 	}
 
-	* entries() {
-		for (const [key, value] of this._entriesAscending()) {
-			yield [key, value.value];
-		}
+	entries() {
+		return this.entriesAscending();
 	}
 
 	forEach(fn, thisArg = this) {
@@ -277,6 +275,6 @@ export default class QuickLRU extends Map {
 	}
 
 	[Symbol.toStringTag]() {
-		return JSON.stringify([...this.cache, ...this.oldCache]);
+		return JSON.stringify([...this.entriesAscending()]);
 	}
 }

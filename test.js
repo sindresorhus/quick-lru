@@ -630,42 +630,6 @@ test('max age - `forEach()` should not return expired entries', async t => {
 	t.deepEqual(entries, [['4', 'coco'], ['5', 'loco']]);
 });
 
-test('max age - `forEach() should not return expired entries even if are not recent', async t => {
-	const lru = new QuickLRU({maxSize: 3, maxAge: 100});
-	lru.set('1', undefined);
-	lru.set('2', 'test2');
-	lru.set('3', 'test3');
-	await delay(200);
-	lru.set('4', 'coco');
-	lru.set('5', 'loco');
-
-	const entries = [];
-
-	lru.forEach((value, key) => {
-		entries.push([key, value]);
-	});
-
-	t.deepEqual(entries, [['4', 'coco'], ['5', 'loco']]);
-});
-
-test('max age - `forEach()` should return the entries that are not expired', async t => {
-	const lru = new QuickLRU({maxSize: 10, maxAge: 100});
-	lru.set('1', undefined);
-	lru.set('2', 'test2');
-	await delay(200);
-	lru.set('3', 'test3');
-	lru.set('4', 'coco');
-	lru.set('5', 'loco');
-
-	const entries = [];
-
-	lru.forEach((value, key) => {
-		entries.push([key, value]);
-	});
-
-	t.deepEqual(entries, [['3', 'test3'], ['4', 'coco'], ['5', 'loco']]);
-});
-
 test('max age - `.[Symbol.iterator]()` should not return expired items', async t => {
 	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('key', 'value');
@@ -801,9 +765,9 @@ test('function value', t => {
 	t.true(isCalled);
 });
 
-test('toString convert the cache items to string in ascending order', t => {
+test('[Symbol.toStringTag] convert the cache items to string in ascending order', t => {
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
 	lru.set('2', 2);
-	t.is(lru[Symbol.toStringTag](), '[["1",{"value":1}],["2",{"value":2}]]');
+	t.is(lru[Symbol.toStringTag](), '[["1",1],["2",2]]');
 });

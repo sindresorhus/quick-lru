@@ -32,7 +32,7 @@ lru.get('🦄');
 
 ### new QuickLRU(options?)
 
-Returns a new instance.
+Returns a new instance extending from [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
 
 ### options
 
@@ -124,11 +124,11 @@ Iterable for all entries, starting with the newest (descending in recency).
 
 #### .entries()
 
-Iterable for all entries, starting with the newest (ascending in recency). We encourage not to use this method unless you need Map compatibility. Use [.entriesAscending()](#.entriesAscending()) instead.
+Iterable for all entries, starting with the newest (ascending in recency). We encourage not to use this method unless you need Map compatibility. Use [.entriesAscending()](#entriesascending) instead.
 
 #### .forEach(callbackFn, thisArgs)
 
-Loop over entries calling the callbackFn for each entry (ascending in recency). We encourage not to use this method unless you need Map compatibility. Use [.entriesAscending()](#.entriesAscending()) instead.
+Loop over entries calling the callbackFn for each entry (ascending in recency). We encourage not to use this method unless you need Map compatibility. Use [.entriesAscending()](#entriesascending) instead.
 
 #### .size
 
