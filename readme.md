@@ -124,11 +124,15 @@ Iterable for all entries, starting with the newest (descending in recency).
 
 #### .entries()
 
-Iterable for all entries, starting with the newest (ascending in recency). We encourage not to use this method unless you need Map compatibility. Use [.entriesAscending()](#entriesascending) instead.
+Iterable for all entries, starting with the newest (ascending in recency).
 
-#### .forEach(callbackFn, thisArgs)
+**This method exists for `Map` compatibility. Prefer [.entriesAscending()](#entriesascending) instead.**
 
-Loop over entries calling the callbackFn for each entry (ascending in recency). We encourage not to use this method unless you need Map compatibility. Use [.entriesAscending()](#entriesascending) instead.
+#### .forEach(callbackFunction, thisArgument)
+
+Loop over entries calling the `callbackFunction` for each entry (ascending in recency).
+
+**This method exists for `Map` compatibility. Prefer [.entriesAscending()](#entriesascending) instead.**
 
 #### .size
 

@@ -1,6 +1,7 @@
 export default class QuickLRU extends Map {
 	constructor(options = {}) {
 		super();
+
 		if (!(options.maxSize && options.maxSize > 0)) {
 			throw new TypeError('`maxSize` must be a number greater than 0');
 		}
