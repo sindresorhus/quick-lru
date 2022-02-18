@@ -270,8 +270,8 @@ export default class QuickLRU extends Map {
 	}
 
 	forEach(callbackFunction, thisArgument = this) {
-		for (const [key, value] of this._entriesAscending()) {
-			callbackFunction.call(thisArgument, value.value, key, this);
+		for (const [key, value] of this.entriesAscending()) {
+			callbackFunction.call(thisArgument, value, key, this);
 		}
 	}
 

@@ -577,30 +577,6 @@ test('max age - `entriesAscending()` should return the entries that are not expi
 	t.deepEqual([...lru.entriesAscending()], [['3', 'test3'], ['4', 'coco'], ['5', 'loco']]);
 });
 
-test('max age - `entries()` should not return expired entries', async t => {
-	const lru = new QuickLRU({maxSize: 5, maxAge: 100});
-	lru.set('1', undefined);
-	lru.set('2', 'test2');
-	lru.set('3', 'test3');
-	await delay(200);
-	lru.set('4', 'coco');
-	lru.set('5', 'loco');
-
-	t.deepEqual([...lru.entries()], [['4', 'coco'], ['5', 'loco']]);
-});
-
-test('max age - `entries() should not return expired entries even if are not recent', async t => {
-	const lru = new QuickLRU({maxSize: 3, maxAge: 100});
-	lru.set('1', undefined);
-	lru.set('2', 'test2');
-	lru.set('3', 'test3');
-	await delay(200);
-	lru.set('4', 'coco');
-	lru.set('5', 'loco');
-
-	t.deepEqual([...lru.entries()], [['4', 'coco'], ['5', 'loco']]);
-});
-
 test('max age - `entries()` should return the entries that are not expired', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 100});
 	lru.set('1', undefined);
