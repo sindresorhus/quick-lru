@@ -34,6 +34,8 @@ lru.get('🦄');
 
 Returns a new instance.
 
+It's a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) subclass.
+
 ### options
 
 Type: `object`
@@ -121,6 +123,18 @@ Iterable for all entries, starting with the oldest (ascending in recency).
 #### .entriesDescending()
 
 Iterable for all entries, starting with the newest (descending in recency).
+
+#### .entries()
+
+Iterable for all entries, starting with the newest (ascending in recency).
+
+**This method exists for `Map` compatibility. Prefer [.entriesAscending()](#entriesascending) instead.**
+
+#### .forEach(callbackFunction, thisArgument)
+
+Loop over entries calling the `callbackFunction` for each entry (ascending in recency).
+
+**This method exists for `Map` compatibility. Prefer [.entriesAscending()](#entriesascending) instead.**
 
 #### .size
 

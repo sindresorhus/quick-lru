@@ -24,7 +24,7 @@ export interface Options<KeyType, ValueType> {
 	onEviction?: (key: KeyType, value: ValueType) => void;
 }
 
-export default class QuickLRU<KeyType, ValueType> implements Iterable<[KeyType, ValueType]> {
+export default class QuickLRU<KeyType, ValueType> extends Map implements Iterable<[KeyType, ValueType]> {
 	/**
 	The stored item count.
 	*/

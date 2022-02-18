@@ -577,6 +577,35 @@ test('max age - `entriesAscending()` should return the entries that are not expi
 	t.deepEqual([...lru.entriesAscending()], [['3', 'test3'], ['4', 'coco'], ['5', 'loco']]);
 });
 
+test('max age - `entries()` should return the entries that are not expired', async t => {
+	const lru = new QuickLRU({maxSize: 10, maxAge: 100});
+	lru.set('1', undefined);
+	lru.set('2', 'test2');
+	await delay(200);
+	lru.set('3', 'test3');
+	lru.set('4', 'coco');
+	lru.set('5', 'loco');
+
+	t.deepEqual([...lru.entries()], [['3', 'test3'], ['4', 'coco'], ['5', 'loco']]);
+});
+
+test('max age - `forEach()` should not return expired entries', async t => {
+	const lru = new QuickLRU({maxSize: 5, maxAge: 100});
+	lru.set('1', undefined);
+	lru.set('2', 'test2');
+	lru.set('3', 'test3');
+	await delay(200);
+	lru.set('4', 'coco');
+	lru.set('5', 'loco');
+	const entries = [];
+
+	lru.forEach((value, key) => {
+		entries.push([key, value]);
+	});
+
+	t.deepEqual(entries, [['4', 'coco'], ['5', 'loco']]);
+});
+
 test('max age - `.[Symbol.iterator]()` should not return expired items', async t => {
 	const lru = new QuickLRU({maxSize: 2, maxAge: 100});
 	lru.set('key', 'value');
@@ -615,6 +644,32 @@ test('entriesDescending enumerates cache items newest-first', t => {
 	lru.set('t', 4);
 	lru.set('v', 3);
 	t.deepEqual([...lru.entriesDescending()], [['v', 3], ['t', 4], ['a', 8], ['q', 2]]);
+});
+
+test('entries enumerates cache items oldest-first', t => {
+	const lru = new QuickLRU({maxSize: 3});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	lru.set('3', 3);
+	lru.set('3', 7);
+	lru.set('2', 8);
+	t.deepEqual([...lru.entries()], [['1', 1], ['3', 7], ['2', 8]]);
+});
+
+test('forEach calls the cb function for each cache item oldest-first', t => {
+	const lru = new QuickLRU({maxSize: 3});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	lru.set('3', 3);
+	lru.set('3', 7);
+	lru.set('2', 8);
+	const entries = [];
+
+	lru.forEach((value, key) => {
+		entries.push([key, value]);
+	});
+
+	t.deepEqual(entries, [['1', 1], ['3', 7], ['2', 8]]);
 });
 
 test('resize removes older items', t => {
@@ -684,4 +739,11 @@ test('function value', t => {
 
 	lru.get('fn')();
 	t.true(isCalled);
+});
+
+test('[Symbol.toStringTag] converts the cache items to a string in ascending order', t => {
+	const lru = new QuickLRU({maxSize: 2});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	t.is(lru[Symbol.toStringTag](), '[["1",1],["2",2]]');
 });
