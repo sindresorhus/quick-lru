@@ -275,7 +275,7 @@ export default class QuickLRU extends Map {
 		}
 	}
 
-	[Symbol.toStringTag]() {
+	get [Symbol.toStringTag]() {
 		return JSON.stringify([...this.entriesAscending()]);
 	}
 }
