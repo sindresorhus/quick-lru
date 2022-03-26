@@ -745,5 +745,12 @@ test('[Symbol.toStringTag] converts the cache items to a string in ascending ord
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
 	lru.set('2', 2);
-	t.is(lru[Symbol.toStringTag](), '[["1",1],["2",2]]');
+	t.is(lru[Symbol.toStringTag], '[["1",1],["2",2]]');
+});
+
+test('toString() works as expected', t => {
+	const lru = new QuickLRU({maxSize: 2});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	t.is(lru.toString(), '[object [["1",1],["2",2]]]');
 });
