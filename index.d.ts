@@ -61,7 +61,7 @@ export default class QuickLRU<KeyType, ValueType> extends Map implements Iterabl
 
 	@returns The list instance.
 	*/
-	set(key: KeyType, value: ValueType, options?: {maxAge?: number}): this;
+	set(key: KeyType, value: ValueType, options?: number | {maxAge?: number}): this;
 
 	/**
 	Get an item.

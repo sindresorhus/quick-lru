@@ -112,7 +112,14 @@ export default class QuickLRU extends Map {
 		}
 	}
 
-	set(key, value, {maxAge = this.maxAge} = {}) {
+	set(key, value, options = {}) {
+		let {maxAge} = this;
+		if (typeof options === 'number') {
+			maxAge = options;
+		} else if (typeof options === 'object' && typeof options.maxAge === 'number') {
+			maxAge = options.maxAge;
+		}
+
 		const expiry =
 			typeof maxAge === 'number' && maxAge !== Number.POSITIVE_INFINITY ?
 				Date.now() + maxAge :

@@ -254,6 +254,16 @@ test('set(expiry) - local expires prevails over the global maxAge', async t => {
 	t.true(lru.has('2'));
 });
 
+test('set(expiry) - local expires prevails over the global maxAge (third argument Number)', async t => {
+	const lru = new QuickLRU({maxSize: 10, maxAge: 1000});
+	lru.set('1', 'test', 100);
+	lru.set('2', 'boo');
+	await delay(300);
+	t.false(lru.has('1'));
+	await delay(200);
+	t.true(lru.has('2'));
+});
+
 test('set(expiry) - set the same item should update the expiration time', async t => {
 	const lru = new QuickLRU({maxSize: 10, maxAge: 150});
 	lru.set('1', 'test');

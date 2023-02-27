@@ -80,6 +80,8 @@ Set an item. Returns the instance.
 
 Individual expiration of an item can be specified with the `maxAge` option. If not specified, the global `maxAge` value will be used in case it is specified on the constructor, otherwise the item will never expire.
 
+Options can either be a Number or an Object (e.g. a TTL to expire in 1 second: `lru.set(key, value, 1000)` or `lru.set(key, value, { maxAge: 1000 })`).
+
 #### .get(key)
 
 Get an item.
