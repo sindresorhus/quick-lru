@@ -125,6 +125,8 @@ export default class QuickLRU extends Map {
 		} else {
 			this._set(key, {value, expiry});
 		}
+
+		return this;
 	}
 
 	has(key) {

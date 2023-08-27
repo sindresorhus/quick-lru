@@ -30,7 +30,8 @@ test('max age - incorrect value', t => {
 test('.get() / .set()', t => {
 	const lru = new QuickLRU({maxSize: 100});
 	lru.set('foo', 1);
-	lru.set('bar', 2);
+	const setReturnValue = lru.set('bar', 2);
+	t.is(setReturnValue, lru);
 	t.is(lru.get('foo'), 1);
 	t.is(lru.size, 2);
 });

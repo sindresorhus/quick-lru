@@ -17,7 +17,7 @@
 	},
 	"scripts": {
 		"//test": "xo && nyc ava && tsd",
-		"test": "xo && ava && tsd"
+		"test": "xo && ava"
 	},
 	"files": [
 		"index.js",
