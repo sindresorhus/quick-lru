@@ -273,6 +273,10 @@ export default class QuickLRU extends Map {
 		return Math.min(this.#size + oldCacheSize, this.#maxSize);
 	}
 
+	get maxSize() {
+		return this.#maxSize;
+	}
+
 	entries() {
 		return this.entriesAscending();
 	}

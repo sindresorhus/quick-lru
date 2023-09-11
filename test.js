@@ -184,6 +184,12 @@ test('max size', t => {
 	t.is(lru.size, 3);
 });
 
+test('.maxSize', t => {
+	const maxSize = 100;
+	const lru = new QuickLRU({maxSize});
+	t.is(lru.maxSize, maxSize);
+});
+
 test('checks total cache size does not exceed `maxSize`', t => {
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);

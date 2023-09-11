@@ -103,6 +103,11 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	get size(): number;
 
 	/**
+	The set max size.
+	*/
+	get maxSize(): number;
+
+	/**
 	Iterable for all the keys.
 	*/
 	keys(): IterableIterator<KeyType>;

@@ -140,6 +140,10 @@ Loop over entries calling the `callbackFunction` for each entry (ascending in re
 
 The stored item count.
 
+#### .maxSize *(getter)*
+
+The set max size.
+
 ## Related
 
 - [yocto-queue](https://github.com/sindresorhus/yocto-queue) - Tiny queue data structure
