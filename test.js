@@ -1,3 +1,4 @@
+import {setTimeout as delay} from 'node:timers/promises';
 import test from 'ava';
 import QuickLRU from './index.js';
 
@@ -8,12 +9,6 @@ const lruWithDuplicates = () => {
 	lru.set('keyDupe', 2);
 	return lru;
 };
-
-// TODO: Use `import {setTimeout as delay} from 'timers/promises';` when targeting Node.js 16.
-const delay = ms =>
-	new Promise(resolve => {
-		setTimeout(resolve, ms);
-	});
 
 test('main', t => {
 	t.throws(() => {
@@ -194,7 +189,7 @@ test('checks total cache size does not exceed `maxSize`', t => {
 	lru.set('1', 1);
 	lru.set('2', 2);
 	lru.get('1');
-	t.is(lru.oldCache.has('1'), false);
+	t.is(lru.__oldCache.has('1'), false);
 });
 
 test('`onEviction` option method is called after `maxSize` is exceeded', t => {
@@ -324,7 +319,7 @@ test('max age - once an item expires, the eviction function should be called', a
 	const lru = new QuickLRU({
 		maxSize: 2,
 		maxAge: 100,
-		onEviction
+		onEviction,
 	});
 
 	lru.set(expectKey, expectValue);
@@ -354,7 +349,7 @@ test('max age - once an non-recent item expires, the eviction function should be
 	const lru = new QuickLRU({
 		maxSize: 2,
 		maxAge: 100,
-		onEviction
+		onEviction,
 	});
 
 	lru.set('1', 'test');
@@ -388,7 +383,7 @@ test('max age - on resize, max aged items should also be evicted', async t => {
 	const lru = new QuickLRU({
 		maxSize: 3,
 		maxAge: 100,
-		onEviction
+		onEviction,
 	});
 
 	lru.set('1', 'test');
@@ -600,9 +595,9 @@ test('max age - `forEach()` should not return expired entries', async t => {
 	lru.set('5', 'loco');
 	const entries = [];
 
-	lru.forEach((value, key) => {
+	for (const [key, value] of lru.entries()) {
 		entries.push([key, value]);
-	});
+	}
 
 	t.deepEqual(entries, [['4', 'coco'], ['5', 'loco']]);
 });
@@ -666,9 +661,9 @@ test('forEach calls the cb function for each cache item oldest-first', t => {
 	lru.set('2', 8);
 	const entries = [];
 
-	lru.forEach((value, key) => {
+	for (const [key, value] of lru.entries()) {
 		entries.push([key, value]);
-	});
+	}
 
 	t.deepEqual(entries, [['1', 1], ['3', 7], ['2', 8]]);
 });

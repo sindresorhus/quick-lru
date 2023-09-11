@@ -1,4 +1,11 @@
 export default class QuickLRU extends Map {
+	#size = 0;
+	#cache = new Map();
+	#oldCache = new Map();
+	#maxSize;
+	#maxAge;
+	#onEviction;
+
 	constructor(options = {}) {
 		super();
 
@@ -10,30 +17,30 @@ export default class QuickLRU extends Map {
 			throw new TypeError('`maxAge` must be a number greater than 0');
 		}
 
-		// TODO: Use private class fields when ESLint supports them.
-		this.maxSize = options.maxSize;
-		this.maxAge = options.maxAge || Number.POSITIVE_INFINITY;
-		this.onEviction = options.onEviction;
-		this.cache = new Map();
-		this.oldCache = new Map();
-		this._size = 0;
+		this.#maxSize = options.maxSize;
+		this.#maxAge = options.maxAge || Number.POSITIVE_INFINITY;
+		this.#onEviction = options.onEviction;
 	}
 
-	// TODO: Use private class methods when targeting Node.js 16.
-	_emitEvictions(cache) {
-		if (typeof this.onEviction !== 'function') {
+	// For tests.
+	get __oldCache() {
+		return this.#oldCache;
+	}
+
+	#emitEvictions(cache) {
+		if (typeof this.#onEviction !== 'function') {
 			return;
 		}
 
 		for (const [key, item] of cache) {
-			this.onEviction(key, item.value);
+			this.#onEviction(key, item.value);
 		}
 	}
 
-	_deleteIfExpired(key, item) {
+	#deleteIfExpired(key, item) {
 		if (typeof item.expiry === 'number' && item.expiry <= Date.now()) {
-			if (typeof this.onEviction === 'function') {
-				this.onEviction(key, item.value);
+			if (typeof this.#onEviction === 'function') {
+				this.#onEviction(key, item.value);
 			}
 
 			return this.delete(key);
@@ -42,54 +49,54 @@ export default class QuickLRU extends Map {
 		return false;
 	}
 
-	_getOrDeleteIfExpired(key, item) {
-		const deleted = this._deleteIfExpired(key, item);
+	#getOrDeleteIfExpired(key, item) {
+		const deleted = this.#deleteIfExpired(key, item);
 		if (deleted === false) {
 			return item.value;
 		}
 	}
 
-	_getItemValue(key, item) {
-		return item.expiry ? this._getOrDeleteIfExpired(key, item) : item.value;
+	#getItemValue(key, item) {
+		return item.expiry ? this.#getOrDeleteIfExpired(key, item) : item.value;
 	}
 
-	_peek(key, cache) {
+	#peek(key, cache) {
 		const item = cache.get(key);
 
-		return this._getItemValue(key, item);
+		return this.#getItemValue(key, item);
 	}
 
-	_set(key, value) {
-		this.cache.set(key, value);
-		this._size++;
+	#set(key, value) {
+		this.#cache.set(key, value);
+		this.#size++;
 
-		if (this._size >= this.maxSize) {
-			this._size = 0;
-			this._emitEvictions(this.oldCache);
-			this.oldCache = this.cache;
-			this.cache = new Map();
+		if (this.#size >= this.#maxSize) {
+			this.#size = 0;
+			this.#emitEvictions(this.#oldCache);
+			this.#oldCache = this.#cache;
+			this.#cache = new Map();
 		}
 	}
 
-	_moveToRecent(key, item) {
-		this.oldCache.delete(key);
-		this._set(key, item);
+	#moveToRecent(key, item) {
+		this.#oldCache.delete(key);
+		this.#set(key, item);
 	}
 
-	* _entriesAscending() {
-		for (const item of this.oldCache) {
+	* #entriesAscending() {
+		for (const item of this.#oldCache) {
 			const [key, value] = item;
-			if (!this.cache.has(key)) {
-				const deleted = this._deleteIfExpired(key, value);
+			if (!this.#cache.has(key)) {
+				const deleted = this.#deleteIfExpired(key, value);
 				if (deleted === false) {
 					yield item;
 				}
 			}
 		}
 
-		for (const item of this.cache) {
+		for (const item of this.#cache) {
 			const [key, value] = item;
-			const deleted = this._deleteIfExpired(key, value);
+			const deleted = this.#deleteIfExpired(key, value);
 			if (deleted === false) {
 				yield item;
 			}
@@ -97,73 +104,72 @@ export default class QuickLRU extends Map {
 	}
 
 	get(key) {
-		if (this.cache.has(key)) {
-			const item = this.cache.get(key);
-
-			return this._getItemValue(key, item);
+		if (this.#cache.has(key)) {
+			const item = this.#cache.get(key);
+			return this.#getItemValue(key, item);
 		}
 
-		if (this.oldCache.has(key)) {
-			const item = this.oldCache.get(key);
-			if (this._deleteIfExpired(key, item) === false) {
-				this._moveToRecent(key, item);
+		if (this.#oldCache.has(key)) {
+			const item = this.#oldCache.get(key);
+			if (this.#deleteIfExpired(key, item) === false) {
+				this.#moveToRecent(key, item);
 				return item.value;
 			}
 		}
 	}
 
-	set(key, value, {maxAge = this.maxAge} = {}) {
-		const expiry =
-			typeof maxAge === 'number' && maxAge !== Number.POSITIVE_INFINITY ?
-				Date.now() + maxAge :
-				undefined;
-		if (this.cache.has(key)) {
-			this.cache.set(key, {
+	set(key, value, {maxAge = this.#maxAge} = {}) {
+		const expiry = typeof maxAge === 'number' && maxAge !== Number.POSITIVE_INFINITY
+			? (Date.now() + maxAge)
+			: undefined;
+
+		if (this.#cache.has(key)) {
+			this.#cache.set(key, {
 				value,
-				expiry
+				expiry,
 			});
 		} else {
-			this._set(key, {value, expiry});
+			this.#set(key, {value, expiry});
 		}
 
 		return this;
 	}
 
 	has(key) {
-		if (this.cache.has(key)) {
-			return !this._deleteIfExpired(key, this.cache.get(key));
+		if (this.#cache.has(key)) {
+			return !this.#deleteIfExpired(key, this.#cache.get(key));
 		}
 
-		if (this.oldCache.has(key)) {
-			return !this._deleteIfExpired(key, this.oldCache.get(key));
+		if (this.#oldCache.has(key)) {
+			return !this.#deleteIfExpired(key, this.#oldCache.get(key));
 		}
 
 		return false;
 	}
 
 	peek(key) {
-		if (this.cache.has(key)) {
-			return this._peek(key, this.cache);
+		if (this.#cache.has(key)) {
+			return this.#peek(key, this.#cache);
 		}
 
-		if (this.oldCache.has(key)) {
-			return this._peek(key, this.oldCache);
+		if (this.#oldCache.has(key)) {
+			return this.#peek(key, this.#oldCache);
 		}
 	}
 
 	delete(key) {
-		const deleted = this.cache.delete(key);
+		const deleted = this.#cache.delete(key);
 		if (deleted) {
-			this._size--;
+			this.#size--;
 		}
 
-		return this.oldCache.delete(key) || deleted;
+		return this.#oldCache.delete(key) || deleted;
 	}
 
 	clear() {
-		this.cache.clear();
-		this.oldCache.clear();
-		this._size = 0;
+		this.#cache.clear();
+		this.#oldCache.clear();
+		this.#size = 0;
 	}
 
 	resize(newSize) {
@@ -171,23 +177,23 @@ export default class QuickLRU extends Map {
 			throw new TypeError('`maxSize` must be a number greater than 0');
 		}
 
-		const items = [...this._entriesAscending()];
+		const items = [...this.#entriesAscending()];
 		const removeCount = items.length - newSize;
 		if (removeCount < 0) {
-			this.cache = new Map(items);
-			this.oldCache = new Map();
-			this._size = items.length;
+			this.#cache = new Map(items);
+			this.#oldCache = new Map();
+			this.#size = items.length;
 		} else {
 			if (removeCount > 0) {
-				this._emitEvictions(items.slice(0, removeCount));
+				this.#emitEvictions(items.slice(0, removeCount));
 			}
 
-			this.oldCache = new Map(items.slice(removeCount));
-			this.cache = new Map();
-			this._size = 0;
+			this.#oldCache = new Map(items.slice(removeCount));
+			this.#cache = new Map();
+			this.#size = 0;
 		}
 
-		this.maxSize = newSize;
+		this.#maxSize = newSize;
 	}
 
 	* keys() {
@@ -203,18 +209,18 @@ export default class QuickLRU extends Map {
 	}
 
 	* [Symbol.iterator]() {
-		for (const item of this.cache) {
+		for (const item of this.#cache) {
 			const [key, value] = item;
-			const deleted = this._deleteIfExpired(key, value);
+			const deleted = this.#deleteIfExpired(key, value);
 			if (deleted === false) {
 				yield [key, value.value];
 			}
 		}
 
-		for (const item of this.oldCache) {
+		for (const item of this.#oldCache) {
 			const [key, value] = item;
-			if (!this.cache.has(key)) {
-				const deleted = this._deleteIfExpired(key, value);
+			if (!this.#cache.has(key)) {
+				const deleted = this.#deleteIfExpired(key, value);
 				if (deleted === false) {
 					yield [key, value.value];
 				}
@@ -223,22 +229,22 @@ export default class QuickLRU extends Map {
 	}
 
 	* entriesDescending() {
-		let items = [...this.cache];
+		let items = [...this.#cache];
 		for (let i = items.length - 1; i >= 0; --i) {
 			const item = items[i];
 			const [key, value] = item;
-			const deleted = this._deleteIfExpired(key, value);
+			const deleted = this.#deleteIfExpired(key, value);
 			if (deleted === false) {
 				yield [key, value.value];
 			}
 		}
 
-		items = [...this.oldCache];
+		items = [...this.#oldCache];
 		for (let i = items.length - 1; i >= 0; --i) {
 			const item = items[i];
 			const [key, value] = item;
-			if (!this.cache.has(key)) {
-				const deleted = this._deleteIfExpired(key, value);
+			if (!this.#cache.has(key)) {
+				const deleted = this.#deleteIfExpired(key, value);
 				if (deleted === false) {
 					yield [key, value.value];
 				}
@@ -247,24 +253,24 @@ export default class QuickLRU extends Map {
 	}
 
 	* entriesAscending() {
-		for (const [key, value] of this._entriesAscending()) {
+		for (const [key, value] of this.#entriesAscending()) {
 			yield [key, value.value];
 		}
 	}
 
 	get size() {
-		if (!this._size) {
-			return this.oldCache.size;
+		if (!this.#size) {
+			return this.#oldCache.size;
 		}
 
 		let oldCacheSize = 0;
-		for (const key of this.oldCache.keys()) {
-			if (!this.cache.has(key)) {
+		for (const key of this.#oldCache.keys()) {
+			if (!this.#cache.has(key)) {
 				oldCacheSize++;
 			}
 		}
 
-		return Math.min(this._size + oldCacheSize, this.maxSize);
+		return Math.min(this.#size + oldCacheSize, this.#maxSize);
 	}
 
 	entries() {
