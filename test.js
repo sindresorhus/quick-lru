@@ -756,3 +756,12 @@ test('toString() works as expected', t => {
 	lru.set('2', 2);
 	t.is(lru.toString(), '[object [["1",1],["2",2]]]');
 });
+
+test('non-primitive key', t => {
+	const lru = new QuickLRU({maxSize: 99});
+	const key = ['foo', 'bar'];
+	const value = true;
+	lru.set(key, value);
+	t.true(lru.has(key));
+	t.is(lru.get(key), value);
+});
