@@ -34,7 +34,7 @@ lru.get('🦄');
 
 Returns a new instance.
 
-It's a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) subclass.
+It's a [`Map`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map) subclass.
 
 ### options
 

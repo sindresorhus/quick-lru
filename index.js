@@ -288,6 +288,14 @@ export default class QuickLRU extends Map {
 	}
 
 	get [Symbol.toStringTag]() {
-		return JSON.stringify([...this.entriesAscending()]);
+		return 'QuickLRU';
+	}
+
+	toString() {
+		return `QuickLRU(${this.size}/${this.maxSize})`;
+	}
+
+	[Symbol.for('nodejs.util.inspect.custom')]() {
+		return this.toString();
 	}
 }

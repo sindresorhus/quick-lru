@@ -743,18 +743,17 @@ test('function value', t => {
 	t.true(isCalled);
 });
 
-test('[Symbol.toStringTag] converts the cache items to a string in ascending order', t => {
+test('[Symbol.toStringTag] output', t => {
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
-	lru.set('2', 2);
-	t.is(lru[Symbol.toStringTag], '[["1",1],["2",2]]');
+	t.is(lru[Symbol.toStringTag], 'QuickLRU');
 });
 
 test('toString() works as expected', t => {
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
 	lru.set('2', 2);
-	t.is(lru.toString(), '[object [["1",1],["2",2]]]');
+	t.is(lru.toString(), 'QuickLRU(2/2)');
 });
 
 test('non-primitive key', t => {
@@ -764,4 +763,23 @@ test('non-primitive key', t => {
 	lru.set(key, value);
 	t.true(lru.has(key));
 	t.is(lru.get(key), value);
+});
+
+test('handles circular references gracefully', t => {
+	const lru = new QuickLRU({maxSize: 2});
+
+	const object1 = {name: 'object1'};
+	const object2 = {name: 'object2'};
+	object1.ref = object2;
+	object2.ref = object1;
+
+	lru.set('key1', object1);
+	lru.set('key2', object2);
+
+	t.notThrows(() => {
+		String(lru);
+	});
+
+	t.is(lru.toString(), 'QuickLRU(2/2)');
+	t.is(Object.prototype.toString.call(lru), '[object QuickLRU]');
 });
