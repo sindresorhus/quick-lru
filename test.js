@@ -87,6 +87,26 @@ test('.peek()', t => {
 	t.false(lru.has('1'));
 });
 
+test('.ttl() - non-existing key yields undefined', t => {
+	const lru = new QuickLRU({maxSize: 100});
+	t.is(lru.ttl('nope'), undefined);
+});
+
+test('.ttl() - existing key without ttl', t => {
+	const lru = new QuickLRU({maxSize: 100});
+	lru.set('infinity', 'no ttl given');
+	t.is(lru.ttl('infinity'), Number.POSITIVE_INFINITY);
+});
+
+test('.ttl() - existing key with ttl', async t => {
+	const lru = new QuickLRU({maxSize: 100});
+	lru.set('100ms', 'ttl given', {maxAge: 100});
+	t.is(lru.ttl('100ms'), 100);
+	await delay(50);
+	const ttl = lru.ttl('100ms');
+	t.true(ttl > 40 && ttl < 60);
+});
+
 test('.delete()', t => {
 	const lru = new QuickLRU({maxSize: 100});
 	lru.set('foo', 1);
