@@ -7,6 +7,7 @@ expectType<QuickLRU<string, number>>(lru.set('🦄', 1).set('🌈', 2));
 expectType<number | undefined>(lru.get('🦄'));
 expectType<boolean>(lru.has('🦄'));
 expectType<number | undefined>(lru.peek('🦄'));
+expectType<number | undefined>(lru.expiresIn('🦄'));
 expectType<boolean>(lru.delete('🦄'));
 expectType<number>(lru.size);
 

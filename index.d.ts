@@ -79,6 +79,15 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	peek(key: KeyType): ValueType | undefined;
 
 	/**
+	Get the remaining time to live in ms for given item, or undefined when item is not in cache.
+	Does not mark it as recently used.
+	Does not remove entry from cache when item is expired.
+
+	@returns Remaining time to live in ms when set, or infinity when maxAge is not set. Undefined when item does not exist.
+	*/
+	expiresIn(key: KeyType): number | undefined;
+
+	/**
 	Delete an item.
 
 	@returns `true` if the item is removed or `false` if the item doesn't exist.

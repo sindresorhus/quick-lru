@@ -62,7 +62,6 @@ export default class QuickLRU extends Map {
 
 	#peek(key, cache) {
 		const item = cache.get(key);
-
 		return this.#getItemValue(key, item);
 	}
 
@@ -154,6 +153,13 @@ export default class QuickLRU extends Map {
 
 		if (this.#oldCache.has(key)) {
 			return this.#peek(key, this.#oldCache);
+		}
+	}
+
+	expiresIn(key) {
+		const item = this.#cache.get(key) ?? this.#oldCache.get(key);
+		if (item) {
+			return item.expiry ? item.expiry - Date.now() : Number.POSITIVE_INFINITY;
 		}
 	}
 
