@@ -156,7 +156,7 @@ export default class QuickLRU extends Map {
 		}
 	}
 
-	ttl(key) {
+	expiresIn(key) {
 		const item = this.#cache.get(key) ?? this.#oldCache.get(key);
 		if (item) {
 			return item.expiry ? item.expiry - Date.now() : Number.POSITIVE_INFINITY;

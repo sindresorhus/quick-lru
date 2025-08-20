@@ -92,6 +92,12 @@ Check if an item exists.
 
 Get an item without marking it as recently used.
 
+#### .expiresIn(key)
+
+Get the remaining time to live in ms for given item, or undefined when item is not in cache.
+Does not mark it as recently used. 
+Does not remove entry from cache when item is expired.
+
 #### .delete(key)
 
 Delete an item.
