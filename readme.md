@@ -52,10 +52,10 @@ The maximum number of items before evicting the least recently used items.
 Type: `number`\
 Default: `Infinity`
 
-The maximum number of milliseconds an item should remain in cache.
-By default maxAge will be Infinity, which means that items will never expire.
+The maximum number of milliseconds an item should remain in the cache.
+By default, `maxAge` will be `Infinity`, which means that items will never expire.
 
-Lazy expiration happens upon the next `write` or `read` call.
+Lazy expiration occurs upon the next `write` or `read` call.
 
 Individual expiration of an item can be specified by the `set(key, value, options)` method.
 
@@ -78,7 +78,7 @@ Both `key` and `value` can be of any type.
 
 Set an item. Returns the instance.
 
-Individual expiration of an item can be specified with the `maxAge` option. If not specified, the global `maxAge` value will be used in case it is specified on the constructor, otherwise the item will never expire.
+Individual expiration of an item can be specified with the `maxAge` option. If not specified, the global `maxAge` value will be used in case it is specified in the constructor; otherwise, the item will never expire.
 
 #### .get(key)
 
@@ -92,12 +92,6 @@ Check if an item exists.
 
 Get an item without marking it as recently used.
 
-#### .expiresIn(key)
-
-Get the remaining time to live in ms for given item, or undefined when item is not in cache.
-Does not mark it as recently used. 
-Does not remove entry from cache when item is expired.
-
 #### .delete(key)
 
 Delete an item.
@@ -107,6 +101,15 @@ Returns `true` if the item is removed or `false` if the item doesn't exist.
 #### .clear()
 
 Delete all items.
+
+#### .expiresIn(key)
+
+Get the remaining time to live (in milliseconds) for the given item, or `undefined` if the item is not in the cache.
+
+- Does not mark the item as recently used.
+- Does not trigger lazy expiration or remove the entry when it’s expired.
+- Returns `Infinity` if the item has no expiration (`maxAge` not set for the item and no global `maxAge`).
+- May return a negative number if the item has already expired but has not yet been lazily removed.
 
 #### .resize(maxSize)
 
@@ -132,7 +135,7 @@ Iterable for all entries, starting with the newest (descending in recency).
 
 #### .entries()
 
-Iterable for all entries, starting with the newest (ascending in recency).
+Iterable for all entries, starting with the oldest (ascending in recency).
 
 **This method exists for `Map` compatibility. Prefer [.entriesAscending()](#entriesascending) instead.**
 

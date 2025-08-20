@@ -5,9 +5,9 @@ export type Options<KeyType, ValueType> = {
 	@default Infinity
 
 	By default, `maxAge` will be `Infinity`, which means that items will never expire.
-	Lazy expiration upon the next write or read call.
+	Lazy expiration occurs upon the next write or read call.
 
-	Individual expiration of an item can be specified by the `set(key, value, maxAge)` method.
+	Individual expiration of an item can be specified with the `set(key, value, {maxAge})` method.
 	*/
 	readonly maxAge?: number;
 
@@ -53,9 +53,9 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	/**
 	Set an item. Returns the instance.
 
-	Individual expiration of an item can be specified with the `maxAge` option. If not specified, the global `maxAge` value will be used in case it is specified in the constructor, otherwise the item will never expire.
+	Individual expiration of an item can be specified with the `maxAge` option. If not specified, the global `maxAge` value will be used in case it is specified in the constructor; otherwise the item will never expire.
 
-	@returns The list instance.
+	@returns The cache instance.
 	*/
 	set(key: KeyType, value: ValueType, options?: {maxAge?: number}): this;
 
@@ -79,15 +79,6 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	peek(key: KeyType): ValueType | undefined;
 
 	/**
-	Get the remaining time to live in ms for given item, or undefined when item is not in cache.
-	Does not mark it as recently used.
-	Does not remove entry from cache when item is expired.
-
-	@returns Remaining time to live in ms when set, or infinity when maxAge is not set. Undefined when item does not exist.
-	*/
-	expiresIn(key: KeyType): number | undefined;
-
-	/**
 	Delete an item.
 
 	@returns `true` if the item is removed or `false` if the item doesn't exist.
@@ -98,6 +89,18 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	Delete all items.
 	*/
 	clear(): void;
+
+	/**
+	Get the remaining time to live (in milliseconds) for the given item, or `undefined` when the item is not in the cache.
+
+	- Does not mark the item as recently used.
+	- Does not trigger lazy expiration or remove the entry when it is expired.
+	- Returns `Infinity` if the item has no expiration.
+	- May return a negative number if the item is already expired but not yet lazily removed.
+
+	@returns Remaining time to live in milliseconds when set, `Infinity` when there is no expiration, or `undefined` when the item does not exist.
+	*/
+	expiresIn(key: KeyType): number | undefined;
 
 	/**
 	Update the `maxSize` in-place, discarding items as necessary. Insertion order is mostly preserved, though this is not a strong guarantee.
