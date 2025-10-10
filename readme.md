@@ -185,6 +185,10 @@ The stored item count.
 
 The set max size.
 
+#### .maxAge *(getter)*
+
+The set max age.
+
 ## Algorithm
 
 This library implements a variant of the [hashlru algorithm](https://github.com/dominictarr/hashlru#algorithm) using JavaScript's `Map` for broader key type support.

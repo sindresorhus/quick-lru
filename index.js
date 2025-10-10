@@ -301,6 +301,10 @@ export default class QuickLRU extends Map {
 		return this.#maxSize;
 	}
 
+	get maxAge() {
+		return this.#maxAge;
+	}
+
 	entries() {
 		return this.entriesAscending();
 	}

@@ -124,6 +124,11 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	get maxSize(): number;
 
 	/**
+	The set max age.
+	*/
+	get maxAge(): number;
+
+	/**
 	Iterable for all the keys.
 	*/
 	keys(): IterableIterator<KeyType>;

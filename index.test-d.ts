@@ -10,6 +10,7 @@ expectType<number | undefined>(lru.peek('🦄'));
 expectType<number | undefined>(lru.expiresIn('🦄'));
 expectType<boolean>(lru.delete('🦄'));
 expectType<number>(lru.size);
+expectType<number>(lru.maxAge);
 
 for (const [key, value] of lru) {
 	expectType<string>(key);

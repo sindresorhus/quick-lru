@@ -218,6 +218,11 @@ test('.maxSize', t => {
 	t.is(lru.maxSize, maxSize);
 });
 
+test('.maxAge', t => {
+	const lru = new QuickLRU({maxSize: 1});
+	t.is(lru.maxAge, Number.POSITIVE_INFINITY);
+});
+
 test('checks total cache size does not exceed `maxSize`', t => {
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);
@@ -291,6 +296,12 @@ test('set(maxAge): setting the same key refreshes expiration', async t => {
 	lru.set('1', 'test');
 	await delay(100);
 	t.true(lru.has('1'));
+});
+
+test('set(maxAge): is returned by getter', t => {
+	const maxAge = 100;
+	const lru = new QuickLRU({maxSize: 1, maxAge});
+	t.is(lru.maxAge, maxAge);
 });
 
 test('maxAge: get() removes an expired item', async t => {
