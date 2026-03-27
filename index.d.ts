@@ -139,6 +139,16 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	values(): IterableIterator<ValueType>;
 
 	/**
+	Iterable for all keys, starting with the newest (descending in recency).
+	*/
+	keysDescending(): IterableIterator<KeyType>;
+
+	/**
+	Iterable for all values, starting with the newest (descending in recency).
+	*/
+	valuesDescending(): IterableIterator<ValueType>;
+
+	/**
 	Iterable for all entries, starting with the oldest (ascending in recency).
 	*/
 	entriesAscending(): IterableIterator<[KeyType, ValueType]>;

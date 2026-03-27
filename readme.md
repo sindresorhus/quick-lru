@@ -157,6 +157,14 @@ Iterable for all the keys.
 
 Iterable for all the values.
 
+#### .keysDescending()
+
+Iterable for all keys, starting with the newest (descending in recency).
+
+#### .valuesDescending()
+
+Iterable for all values, starting with the newest (descending in recency).
+
 #### .entriesAscending()
 
 Iterable for all entries, starting with the oldest (ascending in recency).

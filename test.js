@@ -173,6 +173,32 @@ test('.values() - accounts for duplicates', t => {
 	t.deepEqual([...lru.values()].sort(), [2, 'value']);
 });
 
+test('.keysDescending()', t => {
+	const lru = new QuickLRU({maxSize: 3});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	lru.set('3', 3);
+	t.deepEqual([...lru.keysDescending()], ['3', '2', '1']);
+});
+
+test('.keysDescending() - accounts for duplicates', t => {
+	const lru = lruWithDuplicates();
+	t.deepEqual([...lru.keysDescending()], ['keyDupe', 'key']);
+});
+
+test('.valuesDescending()', t => {
+	const lru = new QuickLRU({maxSize: 3});
+	lru.set('1', 1);
+	lru.set('2', 2);
+	lru.set('3', 3);
+	t.deepEqual([...lru.valuesDescending()], [3, 2, 1]);
+});
+
+test('.valuesDescending() - accounts for duplicates', t => {
+	const lru = lruWithDuplicates();
+	t.deepEqual([...lru.valuesDescending()], [2, 'value']);
+});
+
 test('.[Symbol.iterator]()', t => {
 	const lru = new QuickLRU({maxSize: 2});
 	lru.set('1', 1);

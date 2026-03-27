@@ -232,6 +232,18 @@ export default class QuickLRU extends Map {
 		}
 	}
 
+	* keysDescending() {
+		for (const [key] of this.entriesDescending()) {
+			yield key;
+		}
+	}
+
+	* valuesDescending() {
+		for (const [, value] of this.entriesDescending()) {
+			yield value;
+		}
+	}
+
 	* [Symbol.iterator]() {
 		for (const item of this.#cache) {
 			const [key, value] = item;
