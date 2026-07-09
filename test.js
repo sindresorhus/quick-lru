@@ -728,7 +728,7 @@ test('resize removes older items', t => {
 	t.is(lru.peek('2'), undefined);
 });
 
-test('resize omits evictions', t => {
+test('resize triggers evictions', t => {
 	const calls = [];
 	const onEviction = (...args) => calls.push(args);
 	const lru = new QuickLRU({maxSize: 2, onEviction});
