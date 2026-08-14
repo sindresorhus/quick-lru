@@ -12,6 +12,7 @@ const lruWithDuplicates = () => {
 
 test('main', t => {
 	t.throws(() => {
+		// @ts-expect-error - Testing missing options.
 		new QuickLRU(); // eslint-disable-line no-new
 	}, {message: /maxSize/});
 });
@@ -104,7 +105,7 @@ test('expiresIn() returns remaining ms for expiring item', async t => {
 	t.is(lru.expiresIn('100ms'), 100);
 	await delay(50);
 	const remainingMs = lru.expiresIn('100ms');
-	t.true(remainingMs > 40 && remainingMs < 60);
+	t.true(remainingMs! > 40 && remainingMs! < 60);
 });
 
 test('expiresIn() returns <= 0 when expired and does not evict', async t => {
@@ -112,7 +113,7 @@ test('expiresIn() returns <= 0 when expired and does not evict', async t => {
 	lru.set('short', 'value', {maxAge: 20});
 	await delay(30);
 	const remainingMs = lru.expiresIn('short');
-	t.true(remainingMs <= 0);
+	t.true(remainingMs! <= 0);
 });
 
 test('.delete()', t => {
@@ -235,16 +236,16 @@ test('`onEviction` is called after `maxSize` is exceeded', t => {
 	const expectedKey = '1';
 	const expectedValue = 1;
 	let evictionCalled = false;
-	let actualKey;
-	let actualValue;
+	let actualKey: unknown;
+	let actualValue: unknown;
 
-	const onEviction = (key, value) => {
+	const onEviction = (key: unknown, value: unknown) => {
 		actualKey = key;
 		actualValue = value;
 		evictionCalled = true;
 	};
 
-	const lru = new QuickLRU({maxSize: 1, onEviction});
+	const lru = new QuickLRU<string, number>({maxSize: 1, onEviction});
 	lru.set(expectedKey, expectedValue);
 	lru.set('2', 2);
 	t.is(actualKey, expectedKey);
@@ -271,6 +272,7 @@ test('set(maxAge): items without expiration never expire', async t => {
 
 test('set(maxAge): ignores non-numeric maxAge option', async t => {
 	const lru = new QuickLRU({maxSize: 10});
+	// @ts-expect-error - Testing a non-object options argument.
 	lru.set('1', 'test', 'string');
 	lru.set('2', 'boo');
 	await delay(200);
@@ -353,15 +355,15 @@ test('maxAge: calls onEviction for expired recent item', async t => {
 	const expectedValue = 'test';
 
 	let evictionCalled = false;
-	let actualKey;
-	let actualValue;
-	const onEviction = (key, value) => {
+	let actualKey: unknown;
+	let actualValue: unknown;
+	const onEviction = (key: unknown, value: unknown) => {
 		evictionCalled = true;
 		actualKey = key;
 		actualValue = value;
 	};
 
-	const lru = new QuickLRU({
+	const lru = new QuickLRU<string, string>({
 		maxSize: 2,
 		maxAge: 100,
 		onEviction,
@@ -383,9 +385,9 @@ test('maxAge: calls onEviction for expired non-recent items', async t => {
 	const expectedValues = ['test', 'test2'];
 
 	let evictionCalled = false;
-	const actualKeys = [];
-	const actualValues = [];
-	const onEviction = (key, value) => {
+	const actualKeys: unknown[] = [];
+	const actualValues: unknown[] = [];
+	const onEviction = (key: unknown, value: unknown) => {
 		evictionCalled = true;
 		actualKeys.push(key);
 		actualValues.push(value);
@@ -417,9 +419,9 @@ test('maxAge: evicts expired items on resize', async t => {
 	const expectedValues = ['test', 'test2', 'test3'];
 
 	let evictionCalled = false;
-	const actualKeys = [];
-	const actualValues = [];
-	const onEviction = (key, value) => {
+	const actualKeys: unknown[] = [];
+	const actualValues: unknown[] = [];
+	const onEviction = (key: unknown, value: unknown) => {
 		evictionCalled = true;
 		actualKeys.push(key);
 		actualValues.push(value);
@@ -729,8 +731,8 @@ test('resize removes older items', t => {
 });
 
 test('resize triggers evictions', t => {
-	const calls = [];
-	const onEviction = (...args) => calls.push(args);
+	const calls: unknown[][] = [];
+	const onEviction = (...arguments_: unknown[]) => calls.push(arguments_);
 	const lru = new QuickLRU({maxSize: 2, onEviction});
 
 	lru.set('1', 1);
@@ -771,14 +773,14 @@ test('resize checks parameter bounds', t => {
 });
 
 test('function value', t => {
-	const lru = new QuickLRU({maxSize: 1});
+	const lru = new QuickLRU<string, () => void>({maxSize: 1});
 	let isCalled = false;
 
 	lru.set('fn', () => {
 		isCalled = true;
 	});
 
-	lru.get('fn')();
+	lru.get('fn')!();
 	t.true(isCalled);
 });
 
@@ -807,8 +809,8 @@ test('non-primitive key', t => {
 test('handles circular references gracefully', t => {
 	const lru = new QuickLRU({maxSize: 2});
 
-	const object1 = {name: 'object1'};
-	const object2 = {name: 'object2'};
+	const object1: {name: string; ref?: unknown} = {name: 'object1'};
+	const object2: {name: string; ref?: unknown} = {name: 'object2'};
 	object1.ref = object2;
 	object2.ref = object1;
 
@@ -882,7 +884,7 @@ test('.evict() keeps at least one item', t => {
 });
 
 test('.evict() triggers onEviction callback', t => {
-	const evicted = [];
+	const evicted: Array<{key: unknown; value: unknown}> = [];
 	const lru = new QuickLRU({
 		maxSize: 5,
 		onEviction(key, value) {
@@ -978,6 +980,7 @@ test('.evict() handles edge case inputs', t => {
 	t.is(lru.size, 3);
 
 	// String "1" should be coerced to number 1
+	// @ts-expect-error - Testing type coercion.
 	lru.evict('1');
 	t.is(lru.size, 2);
 
@@ -1065,7 +1068,7 @@ test('.evict() with extremely large count values', t => {
 });
 
 test('.evict() works with complex object values', t => {
-	const evicted = [];
+	const evicted: Array<{key: unknown; value: unknown}> = [];
 	const lru = new QuickLRU({
 		maxSize: 4,
 		onEviction(key, value) {
@@ -1156,14 +1159,17 @@ test('.evict() with non-integer count coercion edge cases', t => {
 	const initialSize = lru.size;
 
 	// Boolean true -> 1
+	// @ts-expect-error - Testing type coercion.
 	lru.evict(true);
 	t.is(lru.size, initialSize - 1);
 
 	// Boolean false -> 0 (no-op)
+	// @ts-expect-error - Testing type coercion.
 	lru.evict(false);
 	t.is(lru.size, initialSize - 1);
 
 	// String with spaces
+	// @ts-expect-error - Testing type coercion.
 	lru.evict('  2  ');
 	t.is(lru.size, 1);
 
@@ -1223,7 +1229,7 @@ test('.evict() during iteration maintains stability', t => {
 });
 
 test('.evict() rapid successive calls', t => {
-	const evicted = [];
+	const evicted: Array<{key: unknown; value: unknown}> = [];
 	const lru = new QuickLRU({
 		maxSize: 10,
 		onEviction(key, value) {
@@ -1246,18 +1252,18 @@ test('.evict() rapid successive calls', t => {
 
 	// Verify eviction order (should be 0, 1, 2, 3, 4)
 	for (let i = 0; i < 5; i++) {
-		t.is(evicted[i].key, i);
-		t.is(evicted[i].value, i);
+		t.is(evicted[i]!.key, i);
+		t.is(evicted[i]!.value, i);
 	}
 });
 
 test('.evict() with circular references', t => {
 	const lru = new QuickLRU({maxSize: 3});
 
-	const circular1 = {name: 'obj1'};
+	const circular1: {name: string; self?: unknown; ref?: unknown} = {name: 'obj1'};
 	circular1.self = circular1;
 
-	const circular2 = {name: 'obj2'};
+	const circular2: {name: string; ref?: unknown} = {name: 'obj2'};
 	circular2.ref = circular1;
 	circular1.ref = circular2;
 
@@ -1296,7 +1302,7 @@ test('.evict() with symbols as keys', t => {
 });
 
 test('.evict() interaction with resize method', t => {
-	const evicted = [];
+	const evicted: Array<{key: unknown; value: unknown}> = [];
 	const lru = new QuickLRU({
 		maxSize: 10,
 		onEviction(key, value) {
@@ -1440,7 +1446,7 @@ test('.evict() with fractional and edge numeric values', t => {
 });
 
 test('.evict() callback execution order and state', t => {
-	const events = [];
+	const events: Array<Record<string, unknown>> = [];
 	const lru = new QuickLRU({
 		maxSize: 5,
 		onEviction(key, value) {
@@ -1543,7 +1549,7 @@ test('.evict() with forEach method interaction', t => {
 });
 
 test('.evict() concurrent with cache capacity triggers', t => {
-	const evicted = [];
+	const evicted: Array<{key: unknown; value: unknown}> = [];
 	const lru = new QuickLRU({
 		maxSize: 3,
 		onEviction(key, value) {
@@ -1651,6 +1657,7 @@ test('.evict() type coercion with special objects', t => {
 	}
 
 	// Test with Date object - Number(new Date(2)) is 2
+	// @ts-expect-error - Testing type coercion.
 	lru.evict(new Date(2)); // Should coerce to 2
 	t.is(lru.size, 3);
 
@@ -1660,10 +1667,12 @@ test('.evict() type coercion with special objects', t => {
 			return 1;
 		},
 	};
+	// @ts-expect-error - Testing type coercion.
 	lru.evict(customObject); // Should coerce to 1
 	t.is(lru.size, 2);
 
 	// Test with array
+	// @ts-expect-error - Testing type coercion.
 	lru.evict([1]); // Should coerce to 1
 	t.is(lru.size, 1);
 });
