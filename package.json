@@ -64,7 +64,8 @@
 		},
 		"nodeArguments": [
 			"--import=tsx"
-		]
+		],
+		"workerThreads": false
 	},
 	"c8": {
 		"reporter": [
