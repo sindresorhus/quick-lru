@@ -1,29 +1,29 @@
-export type Options<KeyType, ValueType> = {
+export type Options<KeyType = unknown, ValueType = unknown> = {
 	/**
-	The maximum number of milliseconds an item should remain in the cache.
+	The maximum number of milliseconds an item should remain in the cache. Must be greater than `0`. A non-numeric value means no expiration.
 
 	@default Infinity
 
 	By default, `maxAge` will be `Infinity`, which means that items will never expire.
-	Lazy expiration occurs upon the next write or read call.
+	Lazy expiration: an expired item is removed when it is next read, iterated, or evicted. Until then, `.size` counts it.
 
 	Individual expiration of an item can be specified with the `set(key, value, {maxAge})` method.
 	*/
 	readonly maxAge?: number;
 
 	/**
-	The target maximum number of items before evicting the least recently used items.
+	The target maximum number of items before evicting the least recently used items. Must be a whole number greater than `0`, or `Infinity`.
 
-	__Note:__ This package uses an [algorithm](https://github.com/sindresorhus/quick-lru#algorithm) which maintains between `maxSize` and `2 × maxSize` items for performance reasons. The cache may temporarily contain up to twice the specified size due to the dual-cache design that avoids expensive delete operations.
+	__Note:__ This package uses an [algorithm](https://github.com/sindresorhus/quick-lru#algorithm) which can store up to `2 × maxSize - 1` items for performance reasons. `.size` is capped at `maxSize`.
 	*/
 	readonly maxSize: number;
 
 	/**
-	Called right before an item is evicted from the cache due to LRU pressure, TTL expiration, or manual eviction via `evict()`.
+	Called when an item is evicted from the cache due to LRU pressure, TTL expiration, `resize()`, or `evict()`.
 
 	Useful for side effects or for items like object URLs that need explicit cleanup (`revokeObjectURL`).
 
-	__Note:__ This callback is not called for manual removals via `delete()` or `clear()`. It fires for automatic evictions and manual evictions via `evict()`.
+	__Note:__ This callback is not called for manual removals via `delete()` or `clear()`, or when `set()` overwrites an item. The item is already removed when the callback runs. The callback must be synchronous, and it must not write to the cache.
 	*/
 	onEviction?: (key: KeyType, value: ValueType) => void;
 };
@@ -33,7 +33,7 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	/**
 	Simple ["Least Recently Used" (LRU) cache](https://en.m.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29).
 
-	The instance is an [`Iterable`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Iteration_protocols) of `[key, value]` pairs so you can use it directly in a [`for…of`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Statements/for...of) loop.
+	The instance is an [`Iterable`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Iteration_protocols) of `[key, value]` pairs so you can use it directly in a [`for…of`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Statements/for...of) loop, starting with the oldest (ascending in recency). Iterating removes the expired items it walks over. Keys added while iterating are not visited. Iteration copies the keys first, so it costs O(n) even when you stop early.
 
 	@example
 	```
@@ -52,12 +52,13 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	*/
 	constructor(options: Options<KeyType, ValueType>);
 
-	[Symbol.iterator](): IterableIterator<[KeyType, ValueType]>;
+	// The iterator types come from `Map`, because newer TypeScript uses `MapIterator`, which is not assignable to `IterableIterator`.
+	[Symbol.iterator](): ReturnType<Map<KeyType, ValueType>[typeof Symbol.iterator]>;
 
 	/**
 	Set an item. Returns the instance.
 
-	Individual expiration of an item can be specified with the `maxAge` option. If not specified, the global `maxAge` value will be used in case it is specified in the constructor; otherwise the item will never expire.
+	Individual expiration of an item can be specified with the `maxAge` option. If not specified, the global `maxAge` value will be used in case it is specified in the constructor; otherwise the item will never expire. A value of `0` or less makes the item expire immediately, and a non-numeric or `NaN` value means no expiration.
 
 	@returns The cache instance.
 	*/
@@ -69,6 +70,45 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	@returns The stored item or `undefined`.
 	*/
 	get(key: KeyType): ValueType | undefined;
+
+	/**
+	Get an item, or set it to `value` if it does not exist.
+
+	@returns The stored item, or `value` when the item was inserted.
+
+	@example
+	```
+	import QuickLRU from 'quick-lru';
+
+	const lru = new QuickLRU({maxSize: 1000});
+
+	lru.set('🦄', '🌈');
+
+	lru.getOrInsert('🦄', '💩');
+	//=> '🌈'
+
+	lru.getOrInsert('🦀', '🎀');
+	//=> '🎀'
+	```
+	*/
+	getOrInsert(key: KeyType, value: ValueType): ValueType;
+
+	/**
+	Get an item, or set it to the result of `callback(key)` if it does not exist. `callback` is only called when the item does not exist.
+
+	@returns The stored item, or the value returned by `callback` when the item was inserted.
+
+	@example
+	```
+	import QuickLRU from 'quick-lru';
+
+	const lru = new QuickLRU({maxSize: 1000});
+
+	lru.getOrInsertComputed('🦄', () => '🌈');
+	//=> '🌈'
+	```
+	*/
+	getOrInsertComputed(key: KeyType, callback: (key: KeyType) => ValueType): ValueType;
 
 	/**
 	Check if an item exists.
@@ -114,7 +154,7 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	resize(maxSize: number): void;
 
 	/**
-	The stored item count.
+	The stored item count, capped at `maxSize`.
 	*/
 	get size(): number;
 
@@ -129,31 +169,39 @@ export default class QuickLRU<KeyType, ValueType> extends Map<KeyType, ValueType
 	get maxAge(): number;
 
 	/**
-	Iterable for all the keys.
+	Iterable for all the keys, starting with the oldest (ascending in recency).
 	*/
-	keys(): IterableIterator<KeyType>;
+	keys(): ReturnType<Map<KeyType, ValueType>['keys']>;
 
 	/**
-	Iterable for all the values.
+	Iterable for all the values, starting with the oldest (ascending in recency).
 	*/
-	values(): IterableIterator<ValueType>;
+	values(): ReturnType<Map<KeyType, ValueType>['values']>;
+
+	/**
+	Loop over the entries, calling `callbackFunction` for each, starting with the oldest.
+
+	@param callbackFunction - Called with the value, the key, and the instance.
+	@param thisArgument - Used as `this` when calling `callbackFunction`. Defaults to the instance.
+	*/
+	forEach(callbackFunction: (value: ValueType, key: KeyType, map: QuickLRU<KeyType, ValueType>) => void, thisArgument?: any): void;
 
 	/**
 	Iterable for all entries, starting with the oldest (ascending in recency).
 	*/
-	entriesAscending(): IterableIterator<[KeyType, ValueType]>;
+	entriesAscending(): ReturnType<Map<KeyType, ValueType>['entries']>;
 
 	/**
 	Iterable for all entries, starting with the newest (descending in recency).
 	*/
-	entriesDescending(): IterableIterator<[KeyType, ValueType]>;
+	entriesDescending(): ReturnType<Map<KeyType, ValueType>['entries']>;
 
 	/**
 	Evict the least recently used items from the cache.
 
 	@param count - The number of items to evict. Defaults to 1.
 
-	It will always keep at least one item in the cache.
+	It will always keep at least one item in the cache, unless all items have expired. It walks the whole cache whatever `count` is, so it is for occasional use, not for a loop.
 
 	@example
 	```
